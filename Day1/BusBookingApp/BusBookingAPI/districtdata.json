@@ -1,0 +1,192 @@
+[
+    {
+        "id": 1,
+        "name": "Ariyalur",
+        "region": "Central"
+    },
+    {
+        "id": 2,
+        "name": "Chengalpattu",
+        "region": "North"
+    },
+    {
+        "id": 3,
+        "name": "Chennai",
+        "region": "North"
+    },
+    {
+        "id": 4,
+        "name": "Coimbatore",
+        "region": "West"
+    },
+    {
+        "id": 5,
+        "name": "Cuddalore",
+        "region": "South"
+    },
+    {
+        "id": 6,
+        "name": "Dharmapuri",
+        "region": "North West"
+    },
+    {
+        "id": 7,
+        "name": "Dindigul",
+        "region": "South"
+    },
+    {
+        "id": 8,
+        "name": "Erode",
+        "region": "West"
+    },
+    {
+        "id": 9,
+        "name": "Kallakurichi",
+        "region": "Central"
+    },
+    {
+        "id": 10,
+        "name": "Kancheepuram",
+        "region": "North"
+    },
+    {
+        "id": 11,
+        "name": "Kanniyakumari",
+        "region": "South"
+    },
+    {
+        "id": 12,
+        "name": "Karur",
+        "region": "Central"
+    },
+    {
+        "id": 13,
+        "name": "Krishnagiri",
+        "region": "North West"
+    },
+    {
+        "id": 14,
+        "name": "Madurai",
+        "region": "South"
+    },
+    {
+        "id": 15,
+        "name": "Mayiladuthurai",
+        "region": "Delta"
+    },
+    {
+        "id": 16,
+        "name": "Nagapattinam",
+        "region": "Delta"
+    },
+    {
+        "id": 17,
+        "name": "Namakkal",
+        "region": "Central"
+    },
+    {
+        "id": 18,
+        "name": "Nilgiris",
+        "region": "West"
+    },
+    {
+        "id": 19,
+        "name": "Perambalur",
+        "region": "Central"
+    },
+    {
+        "id": 20,
+        "name": "Pudukkottai",
+        "region": "South"
+    },
+    {
+        "id": 21,
+        "name": "Ramanathapuram",
+        "region": "South"
+    },
+    {
+        "id": 22,
+        "name": "Ranipet",
+        "region": "North"
+    },
+    {
+        "id": 23,
+        "name": "Salem",
+        "region": "Central"
+    },
+    {
+        "id": 24,
+        "name": "Sivaganga",
+        "region": "South"
+    },
+    {
+        "id": 25,
+        "name": "Tenkasi",
+        "region": "South"
+    },
+    {
+        "id": 26,
+        "name": "Thanjavur",
+        "region": "Delta"
+    },
+    {
+        "id": 27,
+        "name": "Theni",
+        "region": "South"
+    },
+    {
+        "id": 28,
+        "name": "Thoothukudi",
+        "region": "South"
+    },
+    {
+        "id": 29,
+        "name": "Tiruchirappalli",
+        "region": "Central"
+    },
+    {
+        "id": 30,
+        "name": "Tirunelveli",
+        "region": "South"
+    },
+    {
+        "id": 31,
+        "name": "Tirupathur",
+        "region": "North West"
+    },
+    {
+        "id": 32,
+        "name": "Tiruppur",
+        "region": "West"
+    },
+    {
+        "id": 33,
+        "name": "Tiruvallur",
+        "region": "North"
+    },
+    {
+        "id": 34,
+        "name": "Tiruvannamalai",
+        "region": "North"
+    },
+    {
+        "id": 35,
+        "name": "Tiruvarur",
+        "region": "Delta"
+    },
+    {
+        "id": 36,
+        "name": "Vellore",
+        "region": "North"
+    },
+    {
+        "id": 37,
+        "name": "Viluppuram",
+        "region": "Central"
+    },
+    {
+        "id": 38,
+        "name": "Virudhunagar",
+        "region": "South"
+    }
+]
