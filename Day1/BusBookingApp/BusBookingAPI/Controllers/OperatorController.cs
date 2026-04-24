@@ -59,4 +59,17 @@ public class OperatorController : ControllerBase
         var offices = await _operatorService.GetOfficesAsync(userId);
         return Ok(new ApiResponse<IEnumerable<OfficeResponse>>(true, offices, "Offices retrieved successfully"));
     }
+
+    /// <summary>
+    /// Gets the profile and status of the current operator.
+    /// </summary>
+    [HttpGet("profile")]
+    [Authorize(Roles = "Operator")]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var result = await _operatorService.GetProfileAsync(userId);
+        if (!result.Success) return NotFound(new ApiResponse<object>(false, null, result.Message));
+        return Ok(new ApiResponse<OperatorSummaryDto>(true, result.Operator, result.Message));
+    }
 }

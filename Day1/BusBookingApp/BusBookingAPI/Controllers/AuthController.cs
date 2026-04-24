@@ -16,32 +16,26 @@ public class AuthController : ControllerBase
         _authService = authService;
     }
 
-    [HttpPost("register")]
+    [HttpPost("register/user")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
         var result = await _authService.RegisterAsync(request);
         if (!result.Success)
         {
-            if (result.Message == "Email already exists")
-                return Conflict(new { message = result.Message });
-            
-            return BadRequest(new { message = result.Message });
+            return BadRequest(new ApiResponse<object>(false, null, result.Message));
         }
-        return Ok(result.Data);
+        return Ok(new ApiResponse<AuthResponse>(true, result.Data, result.Message));
     }
 
-    [HttpPost("operator/register")]
+    [HttpPost("register/operator")]
     public async Task<IActionResult> RegisterOperator(OperatorRegisterRequest request)
     {
         var result = await _authService.RegisterOperatorAsync(request);
         if (!result.Success)
         {
-            if (result.Message == "Email already exists")
-                return Conflict(new { message = result.Message });
-            
-            return BadRequest(new { message = result.Message });
+            return BadRequest(new ApiResponse<object>(false, null, result.Message));
         }
-        return Ok(result.Data);
+        return Ok(new ApiResponse<AuthResponse>(true, result.Data, result.Message));
     }
 
     [HttpPost("login")]
@@ -50,9 +44,9 @@ public class AuthController : ControllerBase
         var result = await _authService.LoginAsync(request);
         if (!result.Success)
         {
-            return Unauthorized(new { message = result.Message });
+            return Unauthorized(new ApiResponse<object>(false, null, result.Message));
         }
-        return Ok(result.Data);
+        return Ok(new ApiResponse<AuthResponse>(true, result.Data, result.Message));
     }
 
     [Authorize]

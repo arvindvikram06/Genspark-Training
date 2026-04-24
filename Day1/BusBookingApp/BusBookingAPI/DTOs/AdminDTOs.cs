@@ -18,9 +18,20 @@ public record OperatorSummaryDto(
 public record BusSummaryDto(
     int Id,
     string Name,
+    string? OperatorName,
     int TotalSeats,
     BusStatus Status,
     DateTime CreatedAt
+);
+
+public record ScheduleSummaryDto(
+    int Id,
+    string BusName,
+    string OperatorName,
+    string Route,
+    DateTime DepartureTime,
+    decimal Price,
+    ScheduleStatus Status
 );
 
 public record RouteDto(

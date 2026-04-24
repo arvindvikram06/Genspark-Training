@@ -11,6 +11,7 @@ public interface IOperatorService
     Task<IEnumerable<object>> GetDistrictsAsync();
     Task<(bool Success, string Message)> SubmitOfficesAsync(int userId, IEnumerable<OfficeSubmissionRequest> offices);
     Task<IEnumerable<OfficeResponse>> GetOfficesAsync(int userId);
+    Task<(bool Success, string Message, OperatorSummaryDto? Operator)> GetProfileAsync(int userId);
     Task<(bool Success, string Message, BusResponse? Bus)> CreateBusAsync(int userId, CreateBusRequest request);
     Task<IEnumerable<BusResponse>> GetBusesAsync(int userId);
     Task<(bool Success, string Message)> UpdateBusAsync(int userId, int busId, CreateBusRequest request);
@@ -72,6 +73,28 @@ public class OperatorService : IOperatorService
             .Where(oo => oo.Operator.UserId == userId)
             .Select(oo => new OfficeResponse(oo.Id, oo.District, oo.Address))
             .ToListAsync();
+    }
+
+    public async Task<(bool Success, string Message, OperatorSummaryDto? Operator)> GetProfileAsync(int userId)
+    {
+        var op = await _context.Operators
+            .Include(o => o.Buses)
+            .FirstOrDefaultAsync(o => o.UserId == userId);
+
+        if (op == null) return (false, "Operator not found", null);
+
+        var dto = new OperatorSummaryDto(
+            op.Id,
+            op.User?.Name ?? "Unknown",
+            op.User?.Email ?? "Unknown",
+            op.User?.Phone,
+            op.Status,
+            op.HeadOfficeDistrict,
+            op.Buses.Count,
+            0 // Simplified: actual revenue calculation can be added if needed
+        );
+
+        return (true, "Profile retrieved", dto);
     }
 
     public async Task<(bool Success, string Message, BusResponse? Bus)> CreateBusAsync(int userId, CreateBusRequest request)

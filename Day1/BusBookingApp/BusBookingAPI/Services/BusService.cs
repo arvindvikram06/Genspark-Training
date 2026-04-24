@@ -16,6 +16,7 @@ public interface IBusService
         TimeSpan? departureAfter = null);
         
     Task<IEnumerable<BusSearchResponse>> GetAllUpcomingBusesAsync();
+    Task<IEnumerable<BusSearchResponse>> GetAllApprovedBusesAsync();
         
     Task<ScheduleSeatMapResponse?> GetSeatMapAsync(int scheduleId);
 }
@@ -37,7 +38,12 @@ public class BusService : IBusService
         decimal? maxPrice = null, 
         TimeSpan? departureAfter = null)
     {
-        var startOfDay = date.Date.ToUniversalTime();
+        // Ensure date is UTC for PostgreSQL compatibility
+        var dateUtc = date.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(date, DateTimeKind.Utc)
+            : date.ToUniversalTime();
+        
+        var startOfDay = dateUtc.Date;
         var endOfDay = startOfDay.AddDays(1);
 
         var query = _context.Schedules
@@ -93,6 +99,32 @@ public class BusService : IBusService
             .Where(s => s.Status == ScheduleStatus.Approved && !s.Bus.IsDeleted)
             .Where(s => s.DepartureTime >= now)
             .OrderBy(s => s.DepartureTime)
+            .Select(s => new BusSearchResponse(
+                s.Id,
+                s.Bus.Name,
+                s.Bus.Operator.User.Name,
+                s.Route.Source,
+                s.Route.Destination,
+                s.DepartureTime,
+                s.ArrivalTime,
+                s.PricePerSeat,
+                s.Bus.TotalSeats,
+                s.Seats.Count(st => st.Status == SeatStatus.Available),
+                s.BoardingPoint,
+                s.DropPoint
+            )).ToListAsync();
+    }
+
+    public async Task<IEnumerable<BusSearchResponse>> GetAllApprovedBusesAsync()
+    {
+        return await _context.Schedules
+            .Include(s => s.Bus)
+                .ThenInclude(b => b.Operator)
+                    .ThenInclude(o => o.User)
+            .Include(s => s.Route)
+            .Include(s => s.Seats)
+            .Where(s => s.Status == ScheduleStatus.Approved && !s.Bus.IsDeleted)
+            .OrderByDescending(s => s.DepartureTime)
             .Select(s => new BusSearchResponse(
                 s.Id,
                 s.Bus.Name,

@@ -9,12 +9,24 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddScoped<BusBookingAPI.Services.IAuthService, BusBookingAPI.Services.AuthService>();
 builder.Services.AddScoped<BusBookingAPI.Services.IAdminService, BusBookingAPI.Services.AdminService>();
 builder.Services.AddScoped<BusBookingAPI.Services.IOperatorService, BusBookingAPI.Services.OperatorService>();
 builder.Services.AddScoped<BusBookingAPI.Services.IScheduleService, BusBookingAPI.Services.ScheduleService>();
 builder.Services.AddScoped<BusBookingAPI.Services.IBookingService, BusBookingAPI.Services.BookingService>();
 builder.Services.AddScoped<BusBookingAPI.Services.IBusService, BusBookingAPI.Services.BusService>();
+builder.Services.AddScoped<BusBookingAPI.Services.IPaymentService, BusBookingAPI.Services.PaymentService>();
 builder.Services.AddHostedService<BusBookingAPI.Services.SeatHoldCleanupService>();
 
 // Database Configuration
@@ -120,7 +132,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BusBookingAPI v1"));
 }
 
-app.UseHttpsRedirection();
+app.UseCors("AllowAngular");
+// app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -19,6 +19,7 @@ public class BusBookingDbContext : DbContext
     public DbSet<SeatHold> SeatHolds { get; set; }
     public DbSet<Booking> Bookings { get; set; }
     public DbSet<BookingSeat> BookingSeats { get; set; }
+    public DbSet<Payment> Payments { get; set; }
     public DbSet<AppConfig> AppConfigs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,6 +39,8 @@ public class BusBookingDbContext : DbContext
         modelBuilder.Entity<Booking>().HasIndex(b => b.ScheduleId);
         modelBuilder.Entity<BookingSeat>().HasIndex(bs => bs.BookingId);
         modelBuilder.Entity<BookingSeat>().HasIndex(bs => bs.SeatId);
+        modelBuilder.Entity<Payment>().HasIndex(p => p.BookingId);
+        modelBuilder.Entity<Payment>().HasIndex(p => p.UserId);
 
         // One-to-one User-Operator
         modelBuilder.Entity<User>()

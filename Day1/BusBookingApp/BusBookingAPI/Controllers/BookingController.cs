@@ -54,7 +54,7 @@ public class BookingController : ControllerBase
             return BadRequest(new ApiResponse<object>(false, null, result.Message));
         }
         
-        return Ok(new ApiResponse<BookingResponse>(true, result.Data, result.Message));
+        return Ok(new ApiResponse<PaymentInitiationResponse>(true, result.Data, result.Message));
     }
 
     [HttpGet("my")]

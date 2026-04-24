@@ -9,7 +9,7 @@ public interface IBookingService
 {
     Task<(bool Success, string Message, SeatHoldResponse? Data)> HoldSeatsAsync(int userId, SeatHoldRequest request);
     Task<bool> ReleaseHoldAsync(int userId, int holdId);
-    Task<(bool Success, string Message, BookingResponse? Data)> ConfirmBookingAsync(int userId, BookingConfirmRequest request);
+    Task<(bool Success, string Message, PaymentInitiationResponse? Data)> ConfirmBookingAsync(int userId, BookingConfirmRequest request);
     Task<IEnumerable<BookingSummaryResponse>> GetMyBookingsAsync(int userId);
     Task<BookingResponse?> GetBookingDetailAsync(int userId, int bookingId);
     Task<(bool Success, string Message)> CancelBookingAsync(int userId, int bookingId);
@@ -40,7 +40,7 @@ public class BookingService : IBookingService
             if (seats.Any(s => s.Status != SeatStatus.Available))
                 return (false, "One or more seats are already booked or held", null);
 
-            var expiresAt = DateTime.UtcNow.AddMinutes(10);
+            var expiresAt = DateTime.UtcNow.AddMinutes(4);
             var hold = new SeatHold
             {
                 UserId = userId,
@@ -87,7 +87,7 @@ public class BookingService : IBookingService
         return true;
     }
 
-    public async Task<(bool Success, string Message, BookingResponse? Data)> ConfirmBookingAsync(int userId, BookingConfirmRequest request)
+    public async Task<(bool Success, string Message, PaymentInitiationResponse? Data)> ConfirmBookingAsync(int userId, BookingConfirmRequest request)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -106,8 +106,8 @@ public class BookingService : IBookingService
 
             if (schedule == null) return (false, "Schedule not found", null);
 
-            var convenienceFeeStr = (await _context.AppConfigs.FirstOrDefaultAsync(c => c.Key == "ConvenienceFeePerSeat"))?.Value ?? "10";
-            decimal convenienceFee = decimal.Parse(convenienceFeeStr);
+            var config = await _context.AppConfigs.FirstOrDefaultAsync(c => c.Key == "ConvenienceFeePerSeat");
+            decimal convenienceFee = decimal.Parse(config?.Value ?? "10");
 
             var totalAmount = (schedule.PricePerSeat + convenienceFee) * hold.SeatNumbers.Length;
 
@@ -115,20 +115,31 @@ public class BookingService : IBookingService
             {
                 UserId = userId,
                 ScheduleId = hold.ScheduleId,
+                ConvenienceFee = convenienceFee,
                 TotalAmount = totalAmount,
-                Status = BookingStatus.Confirmed,
+                Status = BookingStatus.PendingPayment,
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.Bookings.Add(booking);
             await _context.SaveChangesAsync();
 
+            // Create Payment Transaction
+            var payment = new Payment
+            {
+                BookingId = booking.Id,
+                UserId = userId,
+                Amount = totalAmount,
+                Status = PaymentStatus.Pending
+            };
+            _context.Payments.Add(payment);
+
             foreach (var passenger in request.Passengers)
             {
                 var seat = await _context.Seats.FirstOrDefaultAsync(s => s.ScheduleId == hold.ScheduleId && s.SeatNumber == passenger.SeatNumber);
                 if (seat != null)
                 {
-                    seat.Status = SeatStatus.Booked;
+                    // Keep as Held for now, will become Booked upon payment success
                     _context.BookingSeats.Add(new BookingSeat
                     {
                         BookingId = booking.Id,
@@ -144,12 +155,12 @@ public class BookingService : IBookingService
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            return (true, "Booking confirmed", await GetBookingDetailInternal(booking.Id));
+            return (true, "Booking initialized. Please proceed to payment.", new PaymentInitiationResponse(payment.Id, totalAmount, "Payment record created"));
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return (false, $"Error confirming booking: {ex.Message}", null);
+            return (false, $"Error creating booking: {ex.Message}", null);
         }
     }
 

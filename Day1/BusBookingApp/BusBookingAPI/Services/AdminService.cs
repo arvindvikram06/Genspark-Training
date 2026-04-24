@@ -11,11 +11,15 @@ public interface IAdminService
     Task<bool> ApproveOperatorAsync(int operatorId);
     Task<bool> DisableOperatorAsync(int operatorId);
     Task<IEnumerable<BusSummaryDto>> GetOperatorBusesAsync(int operatorId);
+    Task<IEnumerable<BusSummaryDto>> GetAllBusesAsync();
+    Task<bool> ApproveBusAsync(int busId);
+    Task<bool> DisableBusAsync(int busId);
     Task<decimal> GetOperatorRevenueAsync(int operatorId);
     Task<IEnumerable<RouteDto>> GetRoutesAsync();
     Task<RouteDto> CreateRouteAsync(CreateRouteRequest request);
     Task<bool> UpdateRouteAsync(int id, CreateRouteRequest request);
     Task<bool> DeleteRouteAsync(int id);
+    Task<IEnumerable<ScheduleSummaryDto>> GetPendingSchedulesAsync();
     Task<bool> ApproveScheduleAsync(int scheduleId);
     Task<string> GetConvenienceFeeAsync();
     Task<bool> UpdateConvenienceFeeAsync(decimal fee);
@@ -68,9 +72,47 @@ public class AdminService : IAdminService
     public async Task<IEnumerable<BusSummaryDto>> GetOperatorBusesAsync(int operatorId)
     {
         return await _context.Buses
-            .Where(b => b.OperatorId == operatorId)
-            .Select(b => new BusSummaryDto(b.Id, b.Name, b.TotalSeats, b.Status, b.CreatedAt))
+            .Include(b => b.Operator)
+                .ThenInclude(o => o.User)
+            .Where(b => b.OperatorId == operatorId && !b.IsDeleted)
+            .OrderByDescending(b => b.CreatedAt)
+            .Select(b => new BusSummaryDto(
+                b.Id, 
+                b.Name, 
+                b.Operator != null && b.Operator.User != null ? b.Operator.User.Name : "System", 
+                b.TotalSeats, 
+                b.Status, 
+                b.CreatedAt))
             .ToListAsync();
+    }
+
+    public async Task<IEnumerable<BusSummaryDto>> GetAllBusesAsync()
+    {
+        return await _context.Buses
+            .Include(b => b.Operator)
+            .ThenInclude(o => o.User)
+            .Where(b => !b.IsDeleted)
+            .OrderByDescending(b => b.CreatedAt)
+            .Select(b => new BusSummaryDto(b.Id, b.Name, b.Operator.User.Name, b.TotalSeats, b.Status, b.CreatedAt))
+            .ToListAsync();
+    }
+
+    public async Task<bool> ApproveBusAsync(int busId)
+    {
+        var bus = await _context.Buses.FindAsync(busId);
+        if (bus == null) return false;
+        bus.Status = BusStatus.Approved;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> DisableBusAsync(int busId)
+    {
+        var bus = await _context.Buses.FindAsync(busId);
+        if (bus == null) return false;
+        bus.Status = BusStatus.Disabled;
+        await _context.SaveChangesAsync();
+        return true;
     }
 
     public async Task<decimal> GetOperatorRevenueAsync(int operatorId)
@@ -128,6 +170,27 @@ public class AdminService : IAdminService
         
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<IEnumerable<ScheduleSummaryDto>> GetPendingSchedulesAsync()
+    {
+        return await _context.Schedules
+            .Include(s => s.Bus)
+                .ThenInclude(b => b.Operator)
+                    .ThenInclude(o => o.User)
+            .Include(s => s.Route)
+            .Where(s => s.Status == ScheduleStatus.Pending)
+            .OrderBy(s => s.DepartureTime)
+            .Select(s => new ScheduleSummaryDto(
+                s.Id,
+                s.Bus.Name,
+                s.Bus.Operator.User.Name,
+                $"{s.Route.Source} -> {s.Route.Destination}",
+                s.DepartureTime,
+                s.PricePerSeat,
+                s.Status
+            ))
+            .ToListAsync();
     }
 
     public async Task<bool> ApproveScheduleAsync(int scheduleId)

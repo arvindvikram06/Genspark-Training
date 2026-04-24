@@ -12,6 +12,12 @@ public record SeatHoldResponse(
     DateTime ExpiresAt
 );
 
+public record PaymentInitiationResponse(
+    int PaymentId,
+    decimal Amount,
+    string Message
+);
+
 public record BookingConfirmRequest(
     int HoldId,
     IEnumerable<PassengerDto> Passengers

@@ -22,7 +22,7 @@ public class Booking
     [Column(TypeName = "decimal(18,2)")]
     public decimal ConvenienceFee { get; set; }
     
-    public BookingStatus Status { get; set; } = BookingStatus.Pending;
+    public BookingStatus Status { get; set; } = BookingStatus.PendingPayment;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

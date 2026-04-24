@@ -29,6 +29,16 @@ public class PublicBusController : ControllerBase
     }
 
     /// <summary>
+    /// Lists all approved schedules without date filtering.
+    /// </summary>
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllApprovedBuses()
+    {
+        var results = await _busService.GetAllApprovedBusesAsync();
+        return Ok(new ApiResponse<IEnumerable<BusSearchResponse>>(true, results, "All approved buses retrieved successfully"));
+    }
+
+    /// <summary>
     /// Searches for approved scheduled buses matching the route and date.
     /// </summary>
     /// <param name="source">Departure district (e.g. Chennai)</param>

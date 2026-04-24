@@ -34,6 +34,15 @@ public class ScheduleService : IScheduleService
 
     public async Task<(bool Success, string Message, ScheduleResponse? Data)> CreateScheduleAsync(int userId, CreateScheduleRequest request)
     {
+        // Ensure all DateTime values are UTC for PostgreSQL compatibility
+        var departureTime = request.DepartureTime.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(request.DepartureTime, DateTimeKind.Utc)
+            : request.DepartureTime.ToUniversalTime();
+        
+        var arrivalTime = request.ArrivalTime.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(request.ArrivalTime, DateTimeKind.Utc)
+            : request.ArrivalTime.ToUniversalTime();
+
         var op = await _context.Operators
             .Include(o => o.Offices)
             .FirstOrDefaultAsync(o => o.UserId == userId);
@@ -53,6 +62,20 @@ public class ScheduleService : IScheduleService
         if (sourceOffice == null) return (false, $"You must have an office in {route.Source} for Boarding Point resolution", null);
         if (destOffice == null) return (false, $"You must have an office in {route.Destination} for Drop Point resolution", null);
 
+        // Validation: Departure must be before Arrival
+        if (departureTime >= arrivalTime)
+            return (false, "Departure time must be before arrival time", null);
+
+        // Overlap Check: Ensure bus is not busy during this time
+        var hasOverlap = await _context.Schedules
+            .AnyAsync(s => s.BusId == request.BusId && 
+                           s.Status != ScheduleStatus.Cancelled &&
+                           departureTime < s.ArrivalTime && 
+                           arrivalTime > s.DepartureTime);
+
+        if (hasOverlap)
+            return (false, "This bus is already scheduled for another trip during the selected time period.", null);
+
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
@@ -60,8 +83,8 @@ public class ScheduleService : IScheduleService
             {
                 BusId = request.BusId,
                 RouteId = request.RouteId,
-                DepartureTime = request.DepartureTime,
-                ArrivalTime = request.ArrivalTime,
+                DepartureTime = departureTime,
+                ArrivalTime = arrivalTime,
                 PricePerSeat = request.PricePerSeat,
                 BoardingPoint = sourceOffice.Address,
                 DropPoint = destOffice.Address,
@@ -119,6 +142,15 @@ public class ScheduleService : IScheduleService
 
     public async Task<(bool Success, string Message)> UpdateScheduleAsync(int userId, int scheduleId, CreateScheduleRequest request)
     {
+        // Ensure all DateTime values are UTC for PostgreSQL compatibility
+        var departureTime = request.DepartureTime.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(request.DepartureTime, DateTimeKind.Utc)
+            : request.DepartureTime.ToUniversalTime();
+        
+        var arrivalTime = request.ArrivalTime.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(request.ArrivalTime, DateTimeKind.Utc)
+            : request.ArrivalTime.ToUniversalTime();
+
         var schedule = await _context.Schedules
             .Include(s => s.Bus)
             .FirstOrDefaultAsync(s => s.Id == scheduleId && s.Bus.Operator.UserId == userId);
@@ -128,8 +160,8 @@ public class ScheduleService : IScheduleService
 
         schedule.BusId = request.BusId;
         schedule.RouteId = request.RouteId;
-        schedule.DepartureTime = request.DepartureTime;
-        schedule.ArrivalTime = request.ArrivalTime;
+        schedule.DepartureTime = departureTime;
+        schedule.ArrivalTime = arrivalTime;
         schedule.PricePerSeat = request.PricePerSeat;
 
         await _context.SaveChangesAsync();
@@ -148,7 +180,7 @@ public class ScheduleService : IScheduleService
         if (schedule.Bookings.Any(b => b.Status == BookingStatus.Confirmed))
             return (false, "Cannot cancel schedule with confirmed bookings");
 
-        _context.Schedules.Remove(schedule);
+        schedule.Status = ScheduleStatus.Cancelled;
         await _context.SaveChangesAsync();
         return (true, "Schedule cancelled successfully");
     }

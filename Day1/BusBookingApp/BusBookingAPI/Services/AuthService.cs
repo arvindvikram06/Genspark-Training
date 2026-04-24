@@ -48,7 +48,7 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         var token = GenerateJwtToken(user);
-        return (true, "Registration successful", new AuthResponse(token, user.Id, user.Email, user.Role.ToString()));
+        return (true, "Registration successful", new AuthResponse(token, user.Id, user.Email, user.Name, user.Role.ToString()));
     }
 
     public async Task<(bool Success, string Message, AuthResponse? Data)> RegisterOperatorAsync(OperatorRegisterRequest request)
@@ -86,7 +86,7 @@ public class AuthService : IAuthService
             await transaction.CommitAsync();
 
             var token = GenerateJwtToken(user);
-            return (true, "Operator registration successful", new AuthResponse(token, user.Id, user.Email, user.Role.ToString()));
+            return (true, "Operator registration successful", new AuthResponse(token, user.Id, user.Email, user.Name, user.Role.ToString()));
         }
         catch (Exception ex)
         {
@@ -106,7 +106,7 @@ public class AuthService : IAuthService
             return (false, "Account is disabled", null);
 
         var token = GenerateJwtToken(user);
-        return (true, "Login successful", new AuthResponse(token, user.Id, user.Email, user.Role.ToString()));
+        return (true, "Login successful", new AuthResponse(token, user.Id, user.Email, user.Name, user.Role.ToString()));
     }
 
     private string GenerateJwtToken(User user)
@@ -114,6 +114,7 @@ public class AuthService : IAuthService
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role.ToString())
         };

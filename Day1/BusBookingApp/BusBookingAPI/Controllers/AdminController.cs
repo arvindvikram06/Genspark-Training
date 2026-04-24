@@ -65,6 +65,38 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
+    /// Lists all buses from all operators.
+    /// </summary>
+    [HttpGet("buses")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<BusSummaryDto>>>> GetAllBuses()
+    {
+        var data = await _adminService.GetAllBusesAsync();
+        return Ok(new ApiResponse<IEnumerable<BusSummaryDto>>(true, data, "All buses retrieved successfully"));
+    }
+
+    /// <summary>
+    /// Approves a pending bus.
+    /// </summary>
+    [HttpPut("buses/{id}/approve")]
+    public async Task<ActionResult<ApiResponse<object>>> ApproveBus(int id)
+    {
+        var success = await _adminService.ApproveBusAsync(id);
+        if (!success) return NotFound(new ApiResponse<object>(false, null, "Bus not found"));
+        return Ok(new ApiResponse<object>(true, null, "Bus approved successfully"));
+    }
+
+    /// <summary>
+    /// Disables an active bus.
+    /// </summary>
+    [HttpPut("buses/{id}/disable")]
+    public async Task<ActionResult<ApiResponse<object>>> DisableBus(int id)
+    {
+        var success = await _adminService.DisableBusAsync(id);
+        if (!success) return NotFound(new ApiResponse<object>(false, null, "Bus not found"));
+        return Ok(new ApiResponse<object>(true, null, "Bus disabled successfully"));
+    }
+
+    /// <summary>
     /// Gets total revenue for a specific operator.
     /// </summary>
     [HttpGet("operators/{id}/revenue")]
@@ -116,6 +148,16 @@ public class AdminController : ControllerBase
         if (!success) return NotFound(new ApiResponse<object>(false, null, "Route not found"));
         
         return Ok(new ApiResponse<object>(true, null, "Route deleted successfully"));
+    }
+
+    /// <summary>
+    /// Lists all pending schedules across the platform.
+    /// </summary>
+    [HttpGet("schedules/pending")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<ScheduleSummaryDto>>>> GetPendingSchedules()
+    {
+        var data = await _adminService.GetPendingSchedulesAsync();
+        return Ok(new ApiResponse<IEnumerable<ScheduleSummaryDto>>(true, data, "Pending schedules retrieved successfully"));
     }
 
     /// <summary>
