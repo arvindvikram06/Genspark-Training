@@ -16,7 +16,7 @@ public interface IOperatorService
     Task<IEnumerable<BusResponse>> GetBusesAsync(int userId);
     Task<(bool Success, string Message)> UpdateBusAsync(int userId, int busId, CreateBusRequest request);
     Task<bool> DeleteBusAsync(int userId, int busId);
-    Task<bool> DisableBusAsync(int userId, int busId, DisableBusRequest request);
+    Task<(bool Success, string Message)> DisableBusAsync(int userId, DisableBusRequest request);
     Task<IEnumerable<BookingSummaryDto>> GetBusBookingsAsync(int userId, int busId, int? scheduleId = null);
     Task<ScheduleBookingSummary?> GetScheduleBookingsAsync(int userId, int scheduleId);
 }
@@ -79,9 +79,21 @@ public class OperatorService : IOperatorService
     {
         var op = await _context.Operators
             .Include(o => o.Buses)
+            .Include(o => o.User)
             .FirstOrDefaultAsync(o => o.UserId == userId);
 
         if (op == null) return (false, "Operator not found", null);
+
+        // Calculate total revenue from confirmed bookings
+        var busIds = op.Buses.Select(b => b.Id).ToList();
+        var totalRevenue = await _context.Bookings
+            .Where(b => b.Schedule != null && busIds.Contains(b.Schedule.BusId) && b.Status == BookingStatus.Confirmed)
+            .SumAsync(b => b.TotalAmount);
+
+        // Calculate active trips (approved schedules)
+        var activeTrips = await _context.Schedules
+            .Where(s => busIds.Contains(s.BusId) && s.Status == ScheduleStatus.Approved)
+            .CountAsync();
 
         var dto = new OperatorSummaryDto(
             op.Id,
@@ -91,7 +103,8 @@ public class OperatorService : IOperatorService
             op.Status,
             op.HeadOfficeDistrict,
             op.Buses.Count,
-            0 // Simplified: actual revenue calculation can be added if needed
+            totalRevenue,
+            activeTrips
         );
 
         return (true, "Profile retrieved", dto);
@@ -159,21 +172,21 @@ public class OperatorService : IOperatorService
     {
         var bus = await _context.Buses.FirstOrDefaultAsync(b => b.Id == busId && b.Operator.UserId == userId);
         if (bus == null) return false;
-        
+
         bus.IsDeleted = true;
         await _context.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> DisableBusAsync(int userId, int busId, DisableBusRequest request)
+    public async Task<(bool Success, string Message)> DisableBusAsync(int userId, DisableBusRequest request)
     {
-        var bus = await _context.Buses.FirstOrDefaultAsync(b => b.Id == busId && b.Operator.UserId == userId);
-        if (bus == null) return false;
+        var bus = await _context.Buses.FirstOrDefaultAsync(b => b.Id == request.BusId && b.Operator.UserId == userId);
+        if (bus == null) return (false, "Bus not found");
 
-        bus.DisabledFrom = request.From;
-        bus.DisabledTo = request.To;
+        bus.DisabledFrom = request.DisabledFrom;
+        bus.DisabledTo = request.DisabledTo;
         await _context.SaveChangesAsync();
-        return true;
+        return (true, "Bus disabled successfully");
     }
 
     public async Task<IEnumerable<BookingSummaryDto>> GetBusBookingsAsync(int userId, int busId, int? scheduleId = null)

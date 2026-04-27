@@ -72,4 +72,17 @@ public class OperatorController : ControllerBase
         if (!result.Success) return NotFound(new ApiResponse<object>(false, null, result.Message));
         return Ok(new ApiResponse<OperatorSummaryDto>(true, result.Operator, result.Message));
     }
+
+    /// <summary>
+    /// Disables a bus for a specific time range.
+    /// </summary>
+    [HttpPost("buses/disable")]
+    [Authorize(Roles = "Operator")]
+    public async Task<IActionResult> DisableBus([FromBody] DisableBusRequest request)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var result = await _operatorService.DisableBusAsync(userId, request);
+        if (!result.Success) return BadRequest(new ApiResponse<object>(false, null, result.Message));
+        return Ok(new ApiResponse<object>(true, null, result.Message));
+    }
 }

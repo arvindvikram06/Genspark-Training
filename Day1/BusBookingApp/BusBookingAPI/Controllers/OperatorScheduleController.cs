@@ -100,9 +100,24 @@ public class OperatorScheduleController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         var result = await _operatorService.GetScheduleBookingsAsync(userId, scheduleId);
-        
+
         if (result == null) return NotFound(new ApiResponse<object>(false, null, "Schedule not found or unauthorized"));
-        
+
         return Ok(new ApiResponse<ScheduleBookingSummary>(true, result, "Schedule bookings retrieved successfully"));
+    }
+
+    /// <summary>
+    /// Gets the seat layout and booking status for a specific schedule.
+    /// </summary>
+    [HttpGet("{scheduleId}/seats")]
+    [Authorize(Roles = "Operator")]
+    public async Task<IActionResult> GetScheduleSeats(int scheduleId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var result = await _scheduleService.GetScheduleSeatsAsync(userId, scheduleId);
+
+        if (result == null) return NotFound(new ApiResponse<object>(false, null, "Schedule not found or unauthorized"));
+
+        return Ok(new ApiResponse<object>(true, result, "Seat layout retrieved successfully"));
     }
 }

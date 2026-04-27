@@ -27,11 +27,17 @@ builder.Services.AddScoped<BusBookingAPI.Services.IScheduleService, BusBookingAP
 builder.Services.AddScoped<BusBookingAPI.Services.IBookingService, BusBookingAPI.Services.BookingService>();
 builder.Services.AddScoped<BusBookingAPI.Services.IBusService, BusBookingAPI.Services.BusService>();
 builder.Services.AddScoped<BusBookingAPI.Services.IPaymentService, BusBookingAPI.Services.PaymentService>();
+builder.Services.AddScoped<BusBookingAPI.Services.IEmailService, BusBookingAPI.Services.EmailService>();
 builder.Services.AddHostedService<BusBookingAPI.Services.SeatHoldCleanupService>();
+builder.Services.AddHostedService<BusBookingAPI.Services.PaymentTimeoutService>();
+builder.Services.AddHostedService<BusBookingAPI.Services.ScheduleStatusUpdateService>();
 
 // Database Configuration
 builder.Services.AddDbContext<BusBookingDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// SMTP Configuration
+builder.Services.Configure<BusBookingAPI.Services.SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 
 // Authentication & JWT Configuration
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "YourSuperSecretKeyForJWTAuthentication123456";

@@ -76,6 +76,24 @@ import { AuthService } from '../../../../core/services/auth.service';
     .auth-card { animation: slideUp 0.4s ease-out; background: #ffffff !important; color: #1e293b !important; }
     
     /* Force high contrast for Material form fields */
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    ::ng-deep .mat-mdc-form-field-label-wrapper label {
+      color: #64748b !important;
+    }
+    ::ng-deep .mat-mdc-form-field-input-control {
+      color: #1e293b !important;
+    }
+    ::ng-deep .mat-mdc-select-panel {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    ::ng-deep .mat-mdc-option {
+      background: #f8fafc !important;
+      color: #1e293b !important;
+    }
     ::ng-deep .mat-mdc-form-field { width: 100%; }
     ::ng-deep .mat-mdc-form-field-label-wrapper label { color: #475569 !important; font-weight: 600 !important; }
     ::ng-deep .mat-mdc-text-field-wrapper { background-color: #f8fafc !important; }
@@ -144,9 +162,19 @@ export class LoginComponent implements OnInit {
       next: (res) => {
         if (res && res.success && res.data) {
           const role = res.data.role;
-          if (role === 'Admin') this.router.navigate(['/admin/dashboard']);
-          else if (role === 'Operator') this.router.navigate(['/operator/dashboard']);
-          else this.router.navigate(['/user/dashboard']);
+
+          this.route.queryParams.subscribe(params => {
+            const redirect = params['redirect'];
+            if (redirect === 'search' && role === 'User') {
+              this.router.navigate(['/user/dashboard']);
+            } else if (role === 'Admin') {
+              this.router.navigate(['/admin/dashboard']);
+            } else if (role === 'Operator') {
+              this.router.navigate(['/operator/dashboard']);
+            } else {
+              this.router.navigate(['/user/dashboard']);
+            }
+          });
         } else {
           this.error = res.message || 'Login failed. Please check your credentials.';
           this.loading = false;

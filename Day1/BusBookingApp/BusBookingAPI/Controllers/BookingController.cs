@@ -87,6 +87,17 @@ public class BookingController : ControllerBase
         return Ok(new ApiResponse<object>(true, null, result.Message));
     }
 
+    [HttpGet("hold/active")]
+    public async Task<IActionResult> GetActiveSeatHold([FromQuery] int scheduleId)
+    {
+        var userId = GetUserId();
+        var hold = await _bookingService.GetActiveSeatHoldAsync(userId, scheduleId);
+        
+        if (hold == null) return Ok(new ApiResponse<object>(true, null, "No active seat hold found"));
+        
+        return Ok(new ApiResponse<ActiveSeatHoldResponse>(true, hold, "Active seat hold retrieved"));
+    }
+
     private int GetUserId()
     {
         return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");

@@ -20,12 +20,20 @@ export class OperatorService {
         return this.api.delete(`operator/buses/${id}`);
     }
 
+    disableBus(data: any): Observable<any> {
+        return this.api.post('operator/buses/disable', data);
+    }
+
     getSchedules(): Observable<any> {
         return this.api.get('operator/schedules');
     }
 
     createSchedule(data: any): Observable<any> {
         return this.api.post('operator/schedules', data);
+    }
+
+    getScheduleSeats(scheduleId: number): Observable<any> {
+        return this.api.get(`operator/schedules/${scheduleId}/seats`);
     }
 
     getRoutes(): Observable<any> {

@@ -52,3 +52,20 @@ public record BookingSummaryResponse(
     decimal TotalAmount,
     BookingStatus Status
 );
+
+public record ActiveSeatHoldResponse(
+    int HoldId,
+    string[] SeatNumbers,
+    DateTime ExpiresAt
+);
+
+public record PaymentStatusResponse(
+    int PaymentId,
+    int BookingId,
+    PaymentStatus Status,
+    decimal Amount,
+    DateTime CreatedAt,
+    DateTime? ExpiresAt,
+    string? FailureReason,
+    int RetryCount
+);

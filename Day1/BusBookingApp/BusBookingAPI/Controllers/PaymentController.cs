@@ -19,12 +19,18 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost("pay/{paymentId}")]
-    public async Task<IActionResult> Pay(int paymentId, [FromQuery] string transactionRef = "SIMULATED_REF")
+    public async Task<IActionResult> Pay(int paymentId, [FromQuery] string transactionRef = "SIMULATED_REF", [FromQuery] string? idempotencyKey = null)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-        var result = await _paymentService.ProcessPaymentAsync(userId, paymentId, transactionRef);
+        var result = await _paymentService.ProcessPaymentAsync(userId, paymentId, transactionRef, idempotencyKey);
         
-        if (!result.Success) return BadRequest(new ApiResponse<object>(false, null, result.Message));
+        if (!result.Success)
+        {
+            if (result.Message.Contains("expired", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(409, new ApiResponse<object>(false, null, result.Message));
+            
+            return BadRequest(new ApiResponse<object>(false, null, result.Message));
+        }
         
         return Ok(new ApiResponse<BookingResponse>(true, result.Booking, result.Message));
     }
@@ -35,7 +41,44 @@ public class PaymentController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
         var result = await _paymentService.AbortPendingPaymentAsync(userId, paymentId);
 
-        if (!result.Success) return BadRequest(new ApiResponse<object>(false, null, result.Message));
+        if (!result.Success)
+        {
+            if (result.Message.Contains("Cannot cancel", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(409, new ApiResponse<object>(false, null, result.Message));
+            
+            return BadRequest(new ApiResponse<object>(false, null, result.Message));
+        }
+
+        return Ok(new ApiResponse<object>(true, null, result.Message));
+    }
+
+    [HttpGet("status/{paymentId}")]
+    public async Task<IActionResult> GetStatus(int paymentId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var result = await _paymentService.GetPaymentStatusAsync(userId, paymentId);
+
+        if (!result.Success) return NotFound(new ApiResponse<object>(false, null, result.Message));
+
+        return Ok(new ApiResponse<PaymentStatusResponse>(true, result.Data, result.Message));
+    }
+
+    [HttpPost("retry/{paymentId}")]
+    public async Task<IActionResult> Retry(int paymentId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
+        var result = await _paymentService.RetryPaymentAsync(userId, paymentId);
+
+        if (!result.Success)
+        {
+            if (result.Message.Contains("Maximum retry", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(429, new ApiResponse<object>(false, null, result.Message));
+            
+            if (result.Message.Contains("already successful", StringComparison.OrdinalIgnoreCase))
+                return StatusCode(409, new ApiResponse<object>(false, null, result.Message));
+            
+            return BadRequest(new ApiResponse<object>(false, null, result.Message));
+        }
 
         return Ok(new ApiResponse<object>(true, null, result.Message));
     }

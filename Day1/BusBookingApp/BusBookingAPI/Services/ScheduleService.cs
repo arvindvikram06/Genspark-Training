@@ -13,6 +13,7 @@ public interface IScheduleService
     Task<IEnumerable<ScheduleResponse>> GetOperatorSchedulesAsync(int userId);
     Task<(bool Success, string Message)> UpdateScheduleAsync(int userId, int scheduleId, CreateScheduleRequest request);
     Task<(bool Success, string Message)> CancelScheduleAsync(int userId, int scheduleId);
+    Task<object?> GetScheduleSeatsAsync(int userId, int scheduleId);
 }
 
 public class ScheduleService : IScheduleService
@@ -34,11 +35,11 @@ public class ScheduleService : IScheduleService
 
     public async Task<(bool Success, string Message, ScheduleResponse? Data)> CreateScheduleAsync(int userId, CreateScheduleRequest request)
     {
-        // Ensure all DateTime values are UTC for PostgreSQL compatibility
+        // Convert to UTC for PostgreSQL compatibility while preserving the time value
         var departureTime = request.DepartureTime.Kind == DateTimeKind.Unspecified
             ? DateTime.SpecifyKind(request.DepartureTime, DateTimeKind.Utc)
             : request.DepartureTime.ToUniversalTime();
-        
+
         var arrivalTime = request.ArrivalTime.Kind == DateTimeKind.Unspecified
             ? DateTime.SpecifyKind(request.ArrivalTime, DateTimeKind.Utc)
             : request.ArrivalTime.ToUniversalTime();
@@ -51,6 +52,17 @@ public class ScheduleService : IScheduleService
 
         var bus = await _context.Buses.FirstOrDefaultAsync(b => b.Id == request.BusId && b.OperatorId == op.Id);
         if (bus == null) return (false, "Bus not found or does not belong to you", null);
+
+        // Check if bus is disabled during the requested time period
+        if (bus.DisabledFrom.HasValue && bus.DisabledTo.HasValue)
+        {
+            if (departureTime >= bus.DisabledFrom.Value && departureTime <= bus.DisabledTo.Value)
+                return (false, "Bus is disabled during the requested departure time", null);
+            if (arrivalTime >= bus.DisabledFrom.Value && arrivalTime <= bus.DisabledTo.Value)
+                return (false, "Bus is disabled during the requested arrival time", null);
+            if (departureTime < bus.DisabledFrom.Value && arrivalTime > bus.DisabledTo.Value)
+                return (false, "Bus is disabled during the requested time period", null);
+        }
 
         var route = await _context.Routes.FirstOrDefaultAsync(r => r.Id == request.RouteId && !r.IsDeleted);
         if (route == null) return (false, "Route not found or inactive", null);
@@ -136,7 +148,9 @@ public class ScheduleService : IScheduleService
             .Where(s => s.Bus.Operator.UserId == userId)
             .Select(s => new ScheduleResponse(
                 s.Id, s.BusId, s.Bus.Name, s.RouteId, s.Route.Source, s.Route.Destination,
-                s.DepartureTime, s.ArrivalTime, s.PricePerSeat, s.BoardingPoint, s.DropPoint, s.Status
+                s.DepartureTime, s.ArrivalTime, s.PricePerSeat, s.BoardingPoint, s.DropPoint, s.Status,
+                s.Bus.TotalSeats,
+                s.Seats.Count(seat => seat.Status == SeatStatus.Available)
             )).ToListAsync();
     }
 
@@ -176,13 +190,44 @@ public class ScheduleService : IScheduleService
             .FirstOrDefaultAsync(s => s.Id == scheduleId && s.Bus.Operator.UserId == userId);
 
         if (schedule == null) return (false, "Schedule not found");
-        
+
         if (schedule.Bookings.Any(b => b.Status == BookingStatus.Confirmed))
             return (false, "Cannot cancel schedule with confirmed bookings");
 
         schedule.Status = ScheduleStatus.Cancelled;
         await _context.SaveChangesAsync();
         return (true, "Schedule cancelled successfully");
+    }
+
+    public async Task<object?> GetScheduleSeatsAsync(int userId, int scheduleId)
+    {
+        var schedule = await _context.Schedules
+            .Include(s => s.Bus)
+            .Include(s => s.Route)
+            .Include(s => s.Seats)
+            .ThenInclude(seat => seat.BookingSeats)
+            .FirstOrDefaultAsync(s => s.Id == scheduleId && s.Bus.Operator.UserId == userId);
+
+        if (schedule == null) return null;
+
+        var seats = schedule.Seats.Select(seat => new
+        {
+            seat.SeatNumber,
+            seat.Status,
+            passengerName = seat.BookingSeats.FirstOrDefault()?.PassengerName,
+            passengerAge = seat.BookingSeats.FirstOrDefault()?.PassengerAge,
+            passengerGender = seat.BookingSeats.FirstOrDefault()?.PassengerGender
+        }).ToList();
+
+        return new
+        {
+            scheduleId = schedule.Id,
+            busName = schedule.Bus.Name,
+            source = schedule.Route.Source,
+            destination = schedule.Route.Destination,
+            totalSeats = schedule.Bus.TotalSeats,
+            seats
+        };
     }
 
     private async Task<ScheduleResponse?> MapToResponse(int id)
@@ -193,7 +238,9 @@ public class ScheduleService : IScheduleService
             .Where(s => s.Id == id)
             .Select(s => new ScheduleResponse(
                 s.Id, s.BusId, s.Bus.Name, s.RouteId, s.Route.Source, s.Route.Destination,
-                s.DepartureTime, s.ArrivalTime, s.PricePerSeat, s.BoardingPoint, s.DropPoint, s.Status
+                s.DepartureTime, s.ArrivalTime, s.PricePerSeat, s.BoardingPoint, s.DropPoint, s.Status,
+                s.Bus.TotalSeats,
+                s.Seats.Count(seat => seat.Status == SeatStatus.Available)
             )).FirstOrDefaultAsync();
     }
 }

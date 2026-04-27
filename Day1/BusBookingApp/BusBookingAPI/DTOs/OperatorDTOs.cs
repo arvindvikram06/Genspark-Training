@@ -33,8 +33,9 @@ public record BusResponse(
 );
 
 public record DisableBusRequest(
-    DateTime From,
-    DateTime To
+    int BusId,
+    DateTime DisabledFrom,
+    DateTime DisabledTo
 );
 
 public record BookingSummaryDto(

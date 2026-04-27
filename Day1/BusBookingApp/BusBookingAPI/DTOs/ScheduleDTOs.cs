@@ -22,5 +22,7 @@ public record ScheduleResponse(
     decimal PricePerSeat,
     string BoardingPoint,
     string DropPoint,
-    ScheduleStatus Status
+    ScheduleStatus Status,
+    int TotalSeats,
+    int AvailableSeats
 );

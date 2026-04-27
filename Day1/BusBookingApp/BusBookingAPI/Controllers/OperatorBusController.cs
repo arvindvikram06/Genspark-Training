@@ -81,11 +81,12 @@ public class OperatorBusController : ControllerBase
     public async Task<IActionResult> DisableBus(int id, DisableBusRequest request)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");
-        var success = await _operatorService.DisableBusAsync(userId, id, request);
-        
-        if (!success) return NotFound(new ApiResponse<object>(false, null, "Bus not found"));
-        
-        return Ok(new ApiResponse<object>(true, null, "Bus disabled successfully"));
+        var requestWithBusId = new DisableBusRequest(id, request.DisabledFrom, request.DisabledTo);
+        var result = await _operatorService.DisableBusAsync(userId, requestWithBusId);
+
+        if (!result.Success) return BadRequest(new ApiResponse<object>(false, null, result.Message));
+
+        return Ok(new ApiResponse<object>(true, null, result.Message));
     }
 
     /// <summary>

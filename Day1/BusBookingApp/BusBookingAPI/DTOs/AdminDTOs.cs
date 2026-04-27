@@ -12,7 +12,8 @@ public record OperatorSummaryDto(
     OperatorStatus Status,
     string HeadOfficeDistrict,
     int BusCount,
-    decimal TotalRevenue
+    decimal TotalRevenue,
+    int ActiveTrips = 0
 );
 
 public record BusSummaryDto(

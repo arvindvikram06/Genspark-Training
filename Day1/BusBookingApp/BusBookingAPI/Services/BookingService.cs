@@ -13,15 +13,18 @@ public interface IBookingService
     Task<IEnumerable<BookingSummaryResponse>> GetMyBookingsAsync(int userId);
     Task<BookingResponse?> GetBookingDetailAsync(int userId, int bookingId);
     Task<(bool Success, string Message)> CancelBookingAsync(int userId, int bookingId);
+    Task<ActiveSeatHoldResponse?> GetActiveSeatHoldAsync(int userId, int scheduleId);
 }
 
 public class BookingService : IBookingService
 {
     private readonly BusBookingDbContext _context;
+    private readonly IEmailService _emailService;
 
-    public BookingService(BusBookingDbContext context)
+    public BookingService(BusBookingDbContext context, IEmailService emailService)
     {
         _context = context;
+        _emailService = emailService;
     }
 
     public async Task<(bool Success, string Message, SeatHoldResponse? Data)> HoldSeatsAsync(int userId, SeatHoldRequest request)
@@ -130,7 +133,9 @@ public class BookingService : IBookingService
                 BookingId = booking.Id,
                 UserId = userId,
                 Amount = totalAmount,
-                Status = PaymentStatus.Pending
+                Status = PaymentStatus.Pending,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+                IdempotencyKey = Guid.NewGuid().ToString()
             };
             _context.Payments.Add(payment);
 
@@ -215,11 +220,23 @@ public class BookingService : IBookingService
 
     public async Task<(bool Success, string Message)> CancelBookingAsync(int userId, int bookingId)
     {
-        var booking = await _context.Bookings.Include(b => b.BookingSeats).ThenInclude(bs => bs.Seat).FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == userId);
+        var booking = await _context.Bookings
+            .Include(b => b.BookingSeats)
+                .ThenInclude(bs => bs.Seat)
+            .Include(b => b.Schedule)
+                .ThenInclude(s => s.Route)
+            .Include(b => b.User)
+            .FirstOrDefaultAsync(b => b.Id == bookingId && b.UserId == userId);
+        
         if (booking == null) return (false, "Booking not found");
 
         if (booking.Status != BookingStatus.Confirmed)
             return (false, "Only confirmed bookings can be cancelled");
+
+        // Check if departure time is more than 12 hours away
+        var timeUntilDeparture = booking.Schedule.DepartureTime - DateTime.UtcNow;
+        if (timeUntilDeparture.TotalHours < 12)
+            return (false, "Bookings can only be cancelled at least 12 hours before departure time");
 
         booking.Status = BookingStatus.Cancelled;
         foreach (var bs in booking.BookingSeats)
@@ -228,6 +245,39 @@ public class BookingService : IBookingService
         }
 
         await _context.SaveChangesAsync();
+
+        // Send cancellation email
+        try
+        {
+            // Convert UTC to local time for email display
+            var localDepartureTime = booking.Schedule.DepartureTime.ToLocalTime();
+            await _emailService.SendCancellationEmailAsync(
+                booking.User.Email,
+                booking.User.Name,
+                booking.Schedule.Route.Source,
+                booking.Schedule.Route.Destination,
+                localDepartureTime,
+                booking.TotalAmount
+            );
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't fail the cancellation
+            Console.WriteLine($"Failed to send cancellation email: {ex.Message}");
+        }
+
         return (true, "Booking cancelled successfully");
+    }
+
+    public async Task<ActiveSeatHoldResponse?> GetActiveSeatHoldAsync(int userId, int scheduleId)
+    {
+        var hold = await _context.SeatHolds
+            .Where(h => h.UserId == userId && h.ScheduleId == scheduleId && h.ExpiresAt > DateTime.UtcNow)
+            .OrderByDescending(h => h.HeldAt)
+            .FirstOrDefaultAsync();
+
+        if (hold == null) return null;
+
+        return new ActiveSeatHoldResponse(hold.Id, hold.SeatNumbers, hold.ExpiresAt);
     }
 }

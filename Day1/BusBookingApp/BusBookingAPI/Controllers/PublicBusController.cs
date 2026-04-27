@@ -39,24 +39,31 @@ public class PublicBusController : ControllerBase
     }
 
     /// <summary>
-    /// Searches for approved scheduled buses matching the route and date.
+    /// Searches for approved scheduled buses with flexible filters (fuzzy search).
+    /// All parameters are optional - provide any combination to filter results.
     /// </summary>
-    /// <param name="source">Departure district (e.g. Chennai)</param>
-    /// <param name="destination">Arrival district (e.g. Madurai)</param>
-    /// <param name="date">Date of travel (YYYY-MM-DD)</param>
+    /// <param name="query">Fuzzy search across destination and operator name</param>
+    /// <param name="source">Departure district (fuzzy match, e.g. "Chennai")</param>
+    /// <param name="destination">Arrival district (fuzzy match, e.g. "Madurai")</param>
+    /// <param name="date">Date of travel (YYYY-MM-DD, optional - shows upcoming if not provided)</param>
+    /// <param name="operatorName">Operator/travels name (fuzzy match)</param>
     /// <param name="minPrice">Minimum price filter</param>
     /// <param name="maxPrice">Maximum price filter</param>
     /// <param name="departureAfter">Filter for buses departing after this time (e.g. 14:00:00)</param>
+    /// <param name="departureBefore">Filter for buses departing before this time (e.g. 18:00:00)</param>
     [HttpGet("search")]
     public async Task<IActionResult> Search(
-        [FromQuery] string source, 
-        [FromQuery] string destination, 
-        [FromQuery] DateTime date,
-        [FromQuery] decimal? minPrice,
-        [FromQuery] decimal? maxPrice,
-        [FromQuery] TimeSpan? departureAfter)
+        [FromQuery] string? query = null,
+        [FromQuery] string? source = null,
+        [FromQuery] string? destination = null,
+        [FromQuery] DateTime? date = null,
+        [FromQuery] string? operatorName = null,
+        [FromQuery] decimal? minPrice = null,
+        [FromQuery] decimal? maxPrice = null,
+        [FromQuery] TimeSpan? departureAfter = null,
+        [FromQuery] TimeSpan? departureBefore = null)
     {
-        var results = await _busService.SearchBusesAsync(source, destination, date, minPrice, maxPrice, departureAfter);
+        var results = await _busService.SearchBusesAsync(query, source, destination, date, operatorName, minPrice, maxPrice, departureAfter, departureBefore);
         return Ok(new ApiResponse<IEnumerable<BusSearchResponse>>(true, results, "Buses retrieved successfully"));
     }
 

@@ -26,7 +26,9 @@ public enum ScheduleStatus
     Pending,
     Approved,
     Disabled,
-    Cancelled
+    Cancelled,
+    Ongoing,
+    Completed
 }
 
 public enum SeatStatus
@@ -46,6 +48,9 @@ public enum BookingStatus
 public enum PaymentStatus
 {
     Pending,
+    Processing,
     Success,
-    Failed
+    Failed,
+    Refunded,
+    Timeout
 }

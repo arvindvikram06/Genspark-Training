@@ -46,7 +46,8 @@ public class AdminService : IAdminService
                 o.Status,
                 o.HeadOfficeDistrict,
                 o.Buses.Count,
-                o.Buses.SelectMany(b => b.Schedules).SelectMany(s => s.Bookings).Sum(bk => bk.TotalAmount)
+                o.Buses.SelectMany(b => b.Schedules).SelectMany(s => s.Bookings).Sum(bk => bk.TotalAmount),
+                o.Buses.SelectMany(b => b.Schedules).Count(s => s.Status == ScheduleStatus.Approved)
             ))
             .ToListAsync();
     }

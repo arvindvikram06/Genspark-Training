@@ -24,13 +24,24 @@ export class BookingService {
         return this.api.get(`Booking/${bookingId}`);
     }
 
-    pay(paymentId: number, transactionRef?: string): Observable<any> {
-        const suffix = transactionRef ? `?transactionRef=${encodeURIComponent(transactionRef)}` : '';
+    pay(paymentId: number, transactionRef?: string, idempotencyKey?: string): Observable<any> {
+        let suffix = transactionRef ? `?transactionRef=${encodeURIComponent(transactionRef)}` : '?';
+        if (idempotencyKey) {
+            suffix += suffix.includes('?') ? `&idempotencyKey=${encodeURIComponent(idempotencyKey)}` : `?idempotencyKey=${encodeURIComponent(idempotencyKey)}`;
+        }
         return this.api.post(`Payment/pay/${paymentId}${suffix}`, {});
     }
 
     abortPayment(paymentId: number): Observable<any> {
         return this.api.post(`Payment/abort/${paymentId}`, {});
+    }
+
+    getPaymentStatus(paymentId: number): Observable<any> {
+        return this.api.get(`Payment/status/${paymentId}`);
+    }
+
+    retryPayment(paymentId: number): Observable<any> {
+        return this.api.post(`Payment/retry/${paymentId}`, {});
     }
 
     releaseHold(holdId: number): Observable<any> {
@@ -39,5 +50,9 @@ export class BookingService {
 
     cancelBooking(bookingId: number): Observable<any> {
         return this.api.post(`Booking/${bookingId}/cancel`, {});
+    }
+
+    getActiveSeatHold(scheduleId: number): Observable<any> {
+        return this.api.get(`Booking/hold/active?scheduleId=${scheduleId}`);
     }
 }

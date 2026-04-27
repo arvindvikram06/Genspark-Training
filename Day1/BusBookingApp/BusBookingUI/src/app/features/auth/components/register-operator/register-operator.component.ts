@@ -67,7 +67,7 @@ import { passwordMatchValidator } from '../register-user/register-user.component
               <p class="text-red-500 text-sm font-medium mt-1">{{ error }}</p>
             }
 
-            <button mat-flat-button color="primary" class="w-full h-12 !rounded-lg text-lg font-semibold" 
+            <button type="submit" mat-flat-button color="primary" class="w-full h-12 !rounded-lg text-lg font-semibold !bg-indigo-600 !text-white hover:!bg-indigo-700" 
                     [disabled]="registerForm.invalid || loading">
               <span *ngIf="!loading">Register Now</span>
               <mat-spinner *ngIf="loading" diameter="24" class="mx-auto"></mat-spinner>
@@ -106,6 +106,24 @@ import { passwordMatchValidator } from '../register-user/register-user.component
     .auth-card { animation: slideUp 0.4s ease-out; background: #ffffff !important; color: #1e293b !important; }
     
     /* Force high contrast for Material form fields */
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    ::ng-deep .mat-mdc-form-field-label-wrapper label {
+      color: #64748b !important;
+    }
+    ::ng-deep .mat-mdc-form-field-input-control {
+      color: #1e293b !important;
+    }
+    ::ng-deep .mat-mdc-select-panel {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    ::ng-deep .mat-mdc-option {
+      background: #f8fafc !important;
+      color: #1e293b !important;
+    }
     ::ng-deep .mat-mdc-form-field { width: 100%; }
     ::ng-deep .mat-mdc-form-field-label-wrapper label { color: #475569 !important; font-weight: 600 !important; }
     ::ng-deep .mat-mdc-text-field-wrapper { background-color: #f8fafc !important; }
@@ -120,6 +138,20 @@ import { passwordMatchValidator } from '../register-user/register-user.component
     ::ng-deep input::placeholder { color: #94a3b8 !important; opacity: 1 !important; }
     
     ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: contents; }
+
+    /* Force button background color */
+    ::ng-deep .mat-mdc-button {
+      background-color: #4f46e5 !important;
+      color: #ffffff !important;
+    }
+    ::ng-deep .mat-mdc-button:disabled {
+      background-color: #94a3b8 !important;
+      color: #ffffff !important;
+      opacity: 0.6 !important;
+    }
+    ::ng-deep .mat-mdc-button:not(:disabled):hover {
+      background-color: #4338ca !important;
+    }
 
     @keyframes slideUp {
       from { opacity: 0; transform: translateY(20px); }
@@ -144,7 +176,15 @@ export class RegisterOperatorComponent {
   }, { validators: passwordMatchValidator });
 
   onRegister() {
-    if (this.registerForm.invalid) return;
+    console.log('onRegister called');
+    console.log('Form valid:', this.registerForm.valid);
+    console.log('Form value:', this.registerForm.value);
+    console.log('Form errors:', this.registerForm.errors);
+
+    if (this.registerForm.invalid) {
+      console.log('Form is invalid, not submitting');
+      return;
+    }
 
     this.loading = true;
     this.error = '';
@@ -155,12 +195,16 @@ export class RegisterOperatorComponent {
     };
     delete (payload as any).confirmPassword;
 
+    console.log('Payload:', payload);
+
     this.authService.registerOperator(payload).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Registration successful:', response);
         this.submitted = true;
         this.loading = false;
       },
       error: (err) => {
+        console.error('Registration error:', err);
         this.error = err.error?.message || 'Registration failed. Please try again.';
         this.loading = false;
       }

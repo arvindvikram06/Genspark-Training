@@ -22,5 +22,15 @@ public class Payment
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     
+    public DateTime? ExpiresAt { get; set; }
+    
     public string? TransactionReference { get; set; }
+    
+    public string? IdempotencyKey { get; set; }
+    
+    public int RetryCount { get; set; } = 0;
+    
+    public string? FailureReason { get; set; }
+    
+    public DateTime? ProcessedAt { get; set; }
 }

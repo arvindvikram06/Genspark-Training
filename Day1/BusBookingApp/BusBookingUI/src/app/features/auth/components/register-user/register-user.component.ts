@@ -93,6 +93,24 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
     .auth-card { animation: slideUp 0.4s ease-out; background: #ffffff !important; color: #1e293b !important; }
     
     /* Force high contrast for Material form fields */
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    ::ng-deep .mat-mdc-form-field-label-wrapper label {
+      color: #64748b !important;
+    }
+    ::ng-deep .mat-mdc-form-field-input-control {
+      color: #1e293b !important;
+    }
+    ::ng-deep .mat-mdc-select-panel {
+      background: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    ::ng-deep .mat-mdc-option {
+      background: #f8fafc !important;
+      color: #1e293b !important;
+    }
     ::ng-deep .mat-mdc-form-field { width: 100%; }
     ::ng-deep .mat-mdc-form-field-label-wrapper label { color: #475569 !important; font-weight: 600 !important; }
     ::ng-deep .mat-mdc-text-field-wrapper { background-color: #f8fafc !important; }

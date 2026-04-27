@@ -1,6 +1,7 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -15,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { OperatorService } from '../../../core/services/operator.service';
 
@@ -49,11 +51,9 @@ import { OperatorService } from '../../../core/services/operator.service';
                 <mat-form-field appearance="outline" class="w-full h-auto custom-dark-field">
                   <mat-label>Choose from your fleet</mat-label>
                   <mat-select formControlName="busId">
-                    @for(bus of data.buses; track bus.id) {
-                      <mat-option [value]="bus.id" [disabled]="bus.status !== 1">
+                    <mat-option *ngFor="let bus of data.buses; trackBy: trackById" [value]="bus.id" [disabled]="bus.status !== 1">
                         {{bus.name}} {{bus.status !== 1 ? '(Not approved)' : ''}}
                       </mat-option>
-                    }
                   </mat-select>
                   <mat-icon matPrefix class="mr-2 text-slate-500">directions_bus</mat-icon>
                 </mat-form-field>
@@ -64,9 +64,7 @@ import { OperatorService } from '../../../core/services/operator.service';
                 <mat-form-field appearance="outline" class="w-full h-auto custom-dark-field">
                   <mat-label>Select destination route</mat-label>
                   <mat-select formControlName="routeId">
-                    @for(route of routes; track route.id) {
-                      <mat-option [value]="route.id">{{route.source | titlecase}} → {{route.destination | titlecase}}</mat-option>
-                    }
+                    <mat-option *ngFor="let route of routes; trackBy: trackById" [value]="route.id">{{route.source | titlecase}} → {{route.destination | titlecase}}</mat-option>
                   </mat-select>
                   <mat-icon matPrefix class="mr-2 text-slate-500">near_me</mat-icon>
                 </mat-form-field>
@@ -213,6 +211,8 @@ export class CreateScheduleDialogComponent implements OnInit {
     });
   }
 
+  trackById(index: number, item: any): number { return item.id; }
+
   getFormErrors() {
     const errors: any = {};
     Object.keys(this.scheduleForm.controls).forEach(key => {
@@ -232,19 +232,31 @@ export class CreateScheduleDialogComponent implements OnInit {
 
     const val = this.scheduleForm.value;
 
-    // Combine Date and Time
-    const departureStr = `${this.formatDate(val.depDate)}T${val.depTime}:00`;
-    const arrivalStr = `${this.formatDate(val.arrDate)}T${val.arrTime}:00`;
+    // Combine Date and Time and convert to UTC
+    const departureLocal = new Date(`${this.formatDate(val.depDate)}T${val.depTime}:00`);
+    const arrivalLocal = new Date(`${this.formatDate(val.arrDate)}T${val.arrTime}:00`);
+
+    const departureUTC = departureLocal.toISOString();
+    const arrivalUTC = arrivalLocal.toISOString();
 
     const payload = {
       busId: val.busId,
       routeId: val.routeId,
-      departureTime: departureStr,
-      arrivalTime: arrivalStr,
+      departureTime: departureUTC,
+      arrivalTime: arrivalUTC,
       pricePerSeat: val.pricePerSeat
     };
 
     console.log('--- Submitting Schedule Payload ---');
+    console.log('depDate:', val.depDate);
+    console.log('depTime:', val.depTime);
+    console.log('arrDate:', val.arrDate);
+    console.log('arrTime:', val.arrTime);
+    console.log('departureLocal:', departureLocal);
+    console.log('arrivalLocal:', arrivalLocal);
+    console.log('departureUTC:', departureUTC);
+    console.log('arrivalUTC:', arrivalUTC);
+    console.log('Full payload:', payload);
     console.log(JSON.stringify(payload, null, 2));
 
     this.operatorService.createSchedule(payload).subscribe({
@@ -263,7 +275,10 @@ export class CreateScheduleDialogComponent implements OnInit {
 
   private formatDate(date: Date): string {
     const d = new Date(date);
-    return d.toISOString().split('T')[0];
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
 
@@ -286,9 +301,8 @@ export class CreateScheduleDialogComponent implements OnInit {
 
       <form [formGroup]="officeForm" (ngSubmit)="saveOffices()" class="space-y-6">
         <div formArrayName="offices" class="space-y-4">
-          @for(office of offices.controls; track $index) {
-            <div [formGroupName]="$index" class="p-6 bg-slate-800/20 border border-slate-700/50 rounded-3xl relative group hover:border-amber-500/30 transition-colors">
-              <button type="button" (click)="removeOffice($index)" class="absolute top-4 right-4 text-slate-600 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div *ngFor="let officeGroup of offices.controls; let i = index" [formGroupName]="i" class="p-6 bg-slate-800/20 border border-slate-700/50 rounded-3xl relative group hover:border-amber-500/30 transition-colors">
+              <button type="button" (click)="removeOffice(i)" class="absolute top-4 right-4 text-slate-600 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity">
                 <mat-icon>delete</mat-icon>
               </button>
               
@@ -298,9 +312,7 @@ export class CreateScheduleDialogComponent implements OnInit {
                   <mat-form-field appearance="outline" class="w-full h-auto custom-dark-field">
                     <mat-label>Select District</mat-label>
                     <mat-select formControlName="district">
-                      @for(d of districts; track d.id) {
-                        <mat-option [value]="d.name">{{d.name}}</mat-option>
-                      }
+                      <mat-option *ngFor="let d of districts" [value]="d.name">{{d.name}}</mat-option>
                     </mat-select>
                     <mat-icon matPrefix class="mr-2 text-slate-500">map</mat-icon>
                   </mat-form-field>
@@ -316,7 +328,6 @@ export class CreateScheduleDialogComponent implements OnInit {
                 </div>
               </div>
             </div>
-          }
         </div>
 
         <button type="button" mat-stroked-button (click)="addOffice()" class="w-full !py-6 !border-slate-700 !text-slate-400 hover:!border-amber-500/50 hover:!text-amber-500 !rounded-2xl border-2 border-dashed">
@@ -361,6 +372,8 @@ export class OfficeManagementDialogComponent implements OnInit {
       this.addOffice();
     }
   }
+
+  trackById(index: number, item: any): number { return item.id; }
 
   addOffice(district = '', address = '') {
     this.offices.push(this.fb.group({
@@ -473,8 +486,7 @@ export class OfficeManagementDialogComponent implements OnInit {
 
                 <!-- Seat Grid -->
                 <div class="space-y-4">
-                  @for(row of previewRows; track row.id) {
-                    <div class="flex justify-center items-center gap-4">
+                  <div *ngFor="let row of previewRows" class="flex justify-center items-center gap-4">
                       <!-- Group Alpha -->
                       <div class="flex gap-2.5">
                         <div class="seat-node" [class.invisible]="!row.seats[0]">{{row.seats[0]}}</div>
@@ -488,16 +500,16 @@ export class OfficeManagementDialogComponent implements OnInit {
                       
                       <!-- Group Beta -->
                       <div class="flex gap-2.5">
-                        @if (busForm.value.layoutType === '2x2') {
+                        <ng-container *ngIf="busForm.value.layoutType === '2x2'">
                            <div class="seat-node" [class.invisible]="!row.seats[2]">{{row.seats[2]}}</div>
                            <div class="seat-node" [class.invisible]="!row.seats[3]">{{row.seats[3]}}</div>
-                        } @else {
+                        </ng-container>
+                        <ng-container *ngIf="busForm.value.layoutType !== '2x2'">
                            <div class="seat-node" [class.invisible]="!row.seats[2]">{{row.seats[2]}}</div>
                            <div class="w-[42px]"></div> <!-- Spacer for 2x1 -->
-                        }
+                        </ng-container>
                       </div>
                     </div>
-                  }
                 </div>
              </div>
           </div>
@@ -593,6 +605,8 @@ export class AddBusDialogComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  trackById(index: number, item: any): number { return item.id; }
+
   generatePreview() {
     const total = this.busForm.value.totalSeats;
     const layout = this.busForm.value.layoutType;
@@ -666,11 +680,137 @@ export class AddBusDialogComponent implements OnInit {
   }
 }
 
+// Inline Disable Bus Dialog
+@Component({
+  selector: 'app-disable-bus-dialog',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatDialogModule, MatNativeDateModule],
+  template: `
+    <div class="p-8 bg-slate-900 text-white w-full max-w-md">
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <h2 class="text-2xl font-bold flex items-center gap-3">
+            <mat-icon class="text-amber-500">schedule</mat-icon> Disable Bus
+          </h2>
+          <p class="text-slate-500 text-sm mt-1">Set a time range when this bus will be unavailable for scheduling.</p>
+        </div>
+        <button mat-icon-button mat-dialog-close class="text-slate-500 hover:text-white"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <form [formGroup]="disableForm" (ngSubmit)="submitDisable()">
+        <div class="space-y-6">
+          <div class="bg-slate-800 rounded-lg p-4 mb-6">
+            <p class="text-slate-400 text-sm">Bus</p>
+            <p class="text-white font-bold">{{ data.bus?.name }}</p>
+          </div>
+
+          <mat-form-field appearance="outline" class="!w-full">
+            <mat-label class="!text-slate-400">Disable From</mat-label>
+            <input matInput [matDatepicker]="fromPicker" formControlName="disabledFrom" class="!text-white">
+            <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="!w-full">
+            <mat-label class="!text-slate-400">Disable Until</mat-label>
+            <input matInput [matDatepicker]="toPicker" formControlName="disabledTo" class="!text-white">
+            <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+            <mat-datepicker #toPicker></mat-datepicker>
+          </mat-form-field>
+
+          <div class="flex gap-3 pt-4">
+            <button mat-button type="button" mat-dialog-close class="flex-1 !bg-slate-800 !text-slate-300 !rounded-lg">Cancel</button>
+            <button mat-flat-button type="submit" color="warn" class="flex-1 !bg-amber-600 !text-white !rounded-lg" [disabled]="loading || disableForm.invalid">
+              <mat-icon *ngIf="loading" class="animate-spin">refresh</mat-icon>
+              <span *ngIf="!loading">Disable Bus</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  `,
+  styles: [`
+    :host { display: block; }
+    ::ng-deep .mat-mdc-form-field {
+      background-color: #1e293b !important;
+      border-radius: 8px !important;
+    }
+    ::ng-deep .mat-mdc-text-field {
+      padding: 0 12px !important;
+    }
+    ::ng-deep .mat-mdc-form-field-outline {
+      color: #475569 !important;
+    }
+    ::ng-deep .mat-mdc-form-field-outline-thick {
+      color: #6366f1 !important;
+    }
+    ::ng-deep .mat-mdc-form-field-label {
+      color: #94a3b8 !important;
+    }
+    ::ng-deep .mat-mdc-input-element {
+      color: white !important;
+    }
+    ::ng-deep .mat-mdc-icon-button {
+      color: #94a3b8 !important;
+    }
+  `]
+})
+export class DisableBusDialogComponent implements OnInit {
+  fb = inject(FormBuilder);
+  operatorService = inject(OperatorService);
+  snack = inject(MatSnackBar);
+  dialogRef = inject(MatDialogRef<DisableBusDialogComponent>);
+  cdr = inject(ChangeDetectorRef);
+
+  disableForm: FormGroup;
+  loading = false;
+  data: any;
+
+  constructor() {
+    this.disableForm = this.fb.group({
+      disabledFrom: ['', Validators.required],
+      disabledTo: ['', Validators.required]
+    });
+  }
+
+  ngOnInit() {
+    if (this.data?.bus) {
+      this.cdr.detectChanges();
+    }
+  }
+
+  submitDisable() {
+    if (this.disableForm.invalid) return;
+    this.loading = true;
+
+    const payload = {
+      busId: this.data.bus.id,
+      disabledFrom: this.disableForm.value.disabledFrom,
+      disabledTo: this.disableForm.value.disabledTo
+    };
+
+    this.operatorService.disableBus(payload).subscribe({
+      next: () => {
+        this.snack.open('Bus disabled successfully', 'Success', { duration: 3000 });
+        this.loading = false;
+        this.dialogRef.close(true);
+      },
+      error: (err: any) => {
+        const msg = err.error?.message || err.error || 'Failed to disable bus';
+        this.snack.open(msg, 'Error', { duration: 5000 });
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+}
+
 @Component({
   selector: 'app-operator-dashboard',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatButtonModule,
     MatIconModule,
     MatCardModule,
@@ -678,33 +818,21 @@ export class AddBusDialogComponent implements OnInit {
     MatTableModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   template: `
     <div class="min-h-screen bg-slate-950 text-slate-200">
-      <!-- Header -->
-      <header class="bg-slate-900/50 border-b border-slate-800 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
-              <mat-icon class="text-white">hub</mat-icon>
-            </div>
-            <div>
-              <h1 class="text-xl font-bold text-white tracking-tight">Operator Command</h1>
-              <p class="text-xs text-slate-500 font-mono uppercase tracking-widest">{{ userName }} // ONLINE</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div class="max-w-7xl mx-auto px-6 py-8">
-        @if(loading) {
+        <div *ngIf="loading">
           <div class="flex flex-col items-center justify-center py-32">
             <div class="w-16 h-16 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-6"></div>
             <p class="text-slate-500 font-medium animate-pulse">Synchronizing fleet data...</p>
           </div>
-        } @else if (operatorStatus === 1) {
-          <mat-tab-group class="dark-tabs">
+        </div>
+        <div *ngIf="!loading && operatorStatus === 1">
+          <mat-tab-group class="dark-tabs" [(selectedIndex)]="selectedTabIndex">
             <!-- Summary Tab -->
             <mat-tab>
               <ng-template mat-tab-label>
@@ -714,33 +842,20 @@ export class AddBusDialogComponent implements OnInit {
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <mat-card class="!bg-slate-900 !border-slate-800 !p-6 !rounded-2xl">
                     <p class="text-slate-500 text-sm font-bold uppercase mb-2">Total Revenue</p>
-                    <h2 class="text-4xl font-black text-white">₹0</h2>
+                    <h2 class="text-4xl font-black text-white">₹{{totalRevenue.toLocaleString()}}</h2>
                   </mat-card>
                   <mat-card class="!bg-slate-900 !border-slate-800 !p-6 !rounded-2xl">
                     <p class="text-slate-500 text-sm font-bold uppercase mb-2">Fleet Strength</p>
-                    <h2 class="text-4xl font-black text-white">0</h2>
+                    <h2 class="text-4xl font-black text-white">{{fleetStrength}}</h2>
                   </mat-card>
                   <mat-card class="!bg-slate-900 !border-slate-800 !p-6 !rounded-2xl">
                     <p class="text-slate-500 text-sm font-bold uppercase mb-2">Active Trips</p>
-                    <h2 class="text-4xl font-black text-white">0</h2>
+                    <h2 class="text-4xl font-black text-white">{{activeTrips}}</h2>
                   </mat-card>
                 </div>
-                <!-- Quick Actions -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="p-8 border-2 border-dashed border-slate-800 rounded-3xl flex flex-col items-center justify-center text-center hover:border-indigo-500/50 transition-all cursor-pointer group">
-                    <div class="w-16 h-16 bg-indigo-500/10 text-indigo-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <mat-icon style="font-size: 32px; width: 32px; height: 32px;">add_bus</mat-icon>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Register New Vehicle</h3>
-                    <p class="text-slate-500 text-sm max-w-xs">Add a bus to your fleet and configure its custom seating layout.</p>
-                  </div>
-                  <div class="p-8 border-2 border-dashed border-slate-800 rounded-3xl flex flex-col items-center justify-center text-center hover:border-emerald-500/50 transition-all cursor-pointer group">
-                    <div class="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                      <mat-icon style="font-size: 32px; width: 32px; height: 32px;">add_road</mat-icon>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Plan a New Trip</h3>
-                    <p class="text-slate-500 text-sm max-w-xs">Schedule a bus for an approved route and start accepting bookings.</p>
-                  </div>
+                <div class="text-center text-slate-500 py-12">
+                  <mat-icon class="text-4xl mb-4 opacity-50">dashboard</mat-icon>
+                  <p class="text-lg">Overview statistics displayed above</p>
                 </div>
               </div>
             </mat-tab>
@@ -751,14 +866,28 @@ export class AddBusDialogComponent implements OnInit {
                 <mat-icon class="mr-2">directions_bus</mat-icon> My Fleet
               </ng-template>
               <div class="py-8">
-                <div class="flex justify-between items-center mb-6">
-                  <h2 class="text-2xl font-bold text-white">Vehicle Inventory</h2>
-                  <button mat-flat-button color="primary" (click)="addBus()" class="!rounded-xl !bg-indigo-600 !px-6"> + Add Bus </button>
+                <div *ngIf="loadingBuses">
+                  <div class="flex flex-col items-center justify-center py-20">
+                    <div class="w-12 h-12 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin mb-4"></div>
+                    <p class="text-slate-500">Loading fleet data...</p>
+                  </div>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  @for(bus of operatorBuses; track bus.id) {
-                    <mat-card class="!bg-slate-900 !border-slate-800 !p-0 !rounded-2xl overflow-hidden group">
+                <div *ngIf="!loadingBuses">
+                  <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Vehicle Inventory</h2>
+                    <button mat-flat-button color="primary" (click)="addBus()" class="!rounded-xl !bg-indigo-600 !px-6"> + Add Bus </button>
+                  </div>
+
+                  <div class="mb-6">
+                    <mat-form-field appearance="outline" class="!w-full custom-dark-field">
+                      <mat-label>Search by bus name</mat-label>
+                      <input matInput [(ngModel)]="busSearchQuery" placeholder="Enter bus name...">
+                      <mat-icon matPrefix class="!text-slate-500">search</mat-icon>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <mat-card *ngFor="let bus of filteredBuses; trackBy: trackById" class="!bg-slate-900 !border-slate-800 !p-0 !rounded-2xl overflow-hidden group">
                       <div class="p-6">
                         <div class="flex justify-between items-start mb-4">
                           <div>
@@ -782,20 +911,21 @@ export class AddBusDialogComponent implements OnInit {
                         </div>
 
                         <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button mat-button class="w-full !bg-slate-800 !text-amber-500 !rounded-lg" (click)="openDisableBusDialog(bus)">
+                            <mat-icon class="mr-2">schedule</mat-icon> Disable
+                          </button>
                           <button mat-button class="w-full !bg-slate-800 !text-rose-500 !rounded-lg" (click)="deleteBus(bus.id)">
                             <mat-icon class="mr-2">delete</mat-icon> Remove
                           </button>
                         </div>
                       </div>
                     </mat-card>
-                  }
-                  @if(operatorBuses.length === 0) {
-                    <div class="col-span-full py-20 text-center border-2 border-dashed border-slate-800 rounded-3xl">
+                  </div>
+                  <div *ngIf="operatorBuses.length === 0" class="col-span-full py-20 text-center border-2 border-dashed border-slate-800 rounded-3xl">
                       <mat-icon class="text-slate-700 w-16 h-16 text-[64px] mb-4">no_bus</mat-icon>
                       <p class="text-slate-500 font-medium">No vehicles registered yet.</p>
                       <button mat-button color="primary" (click)="addBus()" class="mt-4">Register First Bus</button>
                     </div>
-                  }
                 </div>
               </div>
             </mat-tab>
@@ -806,13 +936,26 @@ export class AddBusDialogComponent implements OnInit {
                 <mat-icon class="mr-2">event_note</mat-icon> Trip Schedules
               </ng-template>
               <div class="py-8">
-                <div class="flex justify-between items-center mb-6">
-                  <h2 class="text-2xl font-bold text-white">Active Operations</h2>
-                  <button mat-flat-button color="primary" (click)="addSchedule()" class="!bg-emerald-600 !text-white !rounded-xl !px-6"> Schedule Trip </button>
+                <div *ngIf="loadingSchedules" class="flex flex-col items-center justify-center py-20">
+                  <div class="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-4"></div>
+                  <p class="text-slate-500">Loading schedules...</p>
                 </div>
-                
-                <mat-card class="!bg-slate-900 !border-slate-800 !rounded-2xl p-0 overflow-hidden">
-                  <table mat-table [dataSource]="operatorSchedules" class="!bg-transparent w-full">
+                <div *ngIf="!loadingSchedules">
+                  <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Active Operations</h2>
+                    <button mat-flat-button color="primary" (click)="addSchedule()" class="!bg-emerald-600 !text-white !rounded-xl !px-6"> Schedule Trip </button>
+                  </div>
+
+                  <div class="mb-6">
+                    <mat-form-field appearance="outline" class="!w-full custom-dark-field">
+                      <mat-label>Search by route</mat-label>
+                      <input matInput [(ngModel)]="scheduleSearchQuery" (ngModelChange)="updateFilteredSchedules()" placeholder="Enter route (e.g., Chennai to Bangalore)...">
+                      <mat-icon matPrefix class="!text-slate-500">search</mat-icon>
+                    </mat-form-field>
+                  </div>
+
+                  <mat-card class="!bg-slate-900 !border-slate-800 !rounded-2xl p-0 overflow-hidden">
+                  <table mat-table [dataSource]="filteredSchedulesList" class="!bg-transparent w-full">
                     <ng-container matColumnDef="bus">
                       <th mat-header-cell *matHeaderCellDef class="!text-slate-500 !font-bold !py-6 uppercase text-xs">Vehicle</th>
                       <td mat-cell *matCellDef="let s" class="!text-slate-300">
@@ -845,23 +988,44 @@ export class AddBusDialogComponent implements OnInit {
                     <ng-container matColumnDef="status">
                       <th mat-header-cell *matHeaderCellDef class="!text-slate-500 !font-bold !py-6 uppercase text-xs">Status</th>
                       <td mat-cell *matCellDef="let s">
-                        <span [class]="'px-3 py-1 rounded-full text-[10px] font-bold ' + 
-                          (s.status === 1 ? 'bg-emerald-500/10 text-emerald-500' : 
-                           s.status === 0 ? 'bg-amber-500/10 text-amber-500' : 'bg-rose-500/10 text-rose-500')">
-                          {{ s.status === 1 ? 'ACTIVE' : s.status === 0 ? 'PENDING' : 'CANCELLED' }}
+                        <span [class]="'px-3 py-1 rounded-full text-[10px] font-bold ' +
+                          (s.status === 1 ? 'bg-emerald-500/10 text-emerald-500' :
+                           s.status === 0 ? 'bg-amber-500/10 text-amber-500' :
+                           s.status === 4 ? 'bg-blue-500/10 text-blue-500' :
+                           s.status === 5 ? 'bg-purple-500/10 text-purple-500' : 'bg-rose-500/10 text-rose-500')">
+                          {{ s.status === 1 ? 'ACTIVE' : s.status === 0 ? 'PENDING' : s.status === 4 ? 'ONGOING' : s.status === 5 ? 'COMPLETED' : 'CANCELLED' }}
                         </span>
                       </td>
                     </ng-container>
 
-                    <tr mat-header-row *matHeaderRowDef="['bus', 'route', 'time', 'status']" class="!border-slate-800"></tr>
-                    <tr mat-row *matRowDef="let row; columns: ['bus', 'route', 'time', 'status'];" class="!border-slate-800 hover:!bg-slate-800/30 transition-colors"></tr>
+                    <ng-container matColumnDef="seats">
+                      <th mat-header-cell *matHeaderCellDef class="!text-slate-500 !font-bold !py-6 uppercase text-xs">Seats</th>
+                      <td mat-cell *matCellDef="let s" class="!text-slate-300">
+                        <div class="flex items-center gap-2">
+                          <span class="text-xs font-bold text-emerald-400">{{ s.availableSeats || 0 }} avail</span>
+                          <span class="text-slate-600">/</span>
+                          <span class="text-xs text-slate-500">{{ s.totalSeats || 0 }} total</span>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="actions">
+                      <th mat-header-cell *matHeaderCellDef class="!text-slate-500 !font-bold !py-6 uppercase text-xs">Actions</th>
+                      <td mat-cell *matCellDef="let s">
+                        <button (click)="viewScheduleSeats(s)" class="text-indigo-400 hover:text-indigo-300 text-xs font-semibold">View Layout</button>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="['bus', 'route', 'time', 'status', 'seats', 'actions']" class="!border-slate-800"></tr>
+                    <tr mat-row *matRowDef="let row; columns: ['bus', 'route', 'time', 'status', 'seats', 'actions'];" class="!border-slate-800 hover:!bg-slate-800/30 transition-colors cursor-pointer" (click)="viewScheduleSeats(row)"></tr>
                   </table>
-                  @if(operatorSchedules.length === 0) {
+                  <div *ngIf="!hasSchedules">
                     <div class="p-12 text-center text-slate-500 italic">
                       No active schedules found for your fleet.
                     </div>
-                  }
+                  </div>
                 </mat-card>
+                </div>
               </div>
             </mat-tab>
 
@@ -871,33 +1035,38 @@ export class AddBusDialogComponent implements OnInit {
                 <mat-icon class="mr-2">business</mat-icon> Office Locations
               </ng-template>
               <div class="py-8">
-                <div class="flex justify-between items-center mb-6">
-                  <h2 class="text-2xl font-bold text-white">Service Centers</h2>
-                  <button mat-flat-button color="accent" (click)="manageOffices()" class="!rounded-xl !bg-amber-600 !text-white !px-6"> Manage Offices </button>
+                <div *ngIf="loadingOffices">
+                  <div class="flex flex-col items-center justify-center py-20">
+                    <div class="w-12 h-12 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mb-4"></div>
+                    <p class="text-slate-500">Loading offices...</p>
+                  </div>
                 </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  @for(office of operatorOffices; track office.id) {
-                    <mat-card class="!bg-slate-900 !border-slate-800 !p-6 !rounded-2xl group border-l-4 !border-l-amber-500">
+                <div *ngIf="!loadingOffices">
+                  <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-white">Service Centers</h2>
+                    <button mat-flat-button color="accent" (click)="manageOffices()" class="!rounded-xl !bg-amber-600 !text-white !px-6"> Manage Offices </button>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <mat-card *ngFor="let office of operatorOffices; trackBy: trackById" class="!bg-slate-900 !border-slate-800 !p-6 !rounded-2xl group border-l-4 !border-l-amber-500">
                       <div class="flex justify-between items-start mb-4">
                         <h3 class="text-lg font-bold text-white">{{office.district}}</h3>
                         <mat-icon class="text-amber-500/30 group-hover:text-amber-500 transition-colors">business</mat-icon>
                       </div>
                       <p class="text-slate-400 text-sm leading-relaxed mb-4">{{office.address}}</p>
                     </mat-card>
-                  }
-                  @if(operatorOffices.length === 0) {
-                    <div class="col-span-full py-20 text-center border-2 border-dashed border-slate-800 rounded-3xl">
+                  </div>
+                  <div *ngIf="operatorOffices.length === 0" class="col-span-full py-20 text-center border-2 border-dashed border-slate-800 rounded-3xl">
                       <mat-icon class="text-slate-700 w-16 h-16 text-[64px] mb-4">location_off</mat-icon>
                       <p class="text-slate-500 font-medium">No service centers registered.</p>
                       <button mat-button color="accent" (click)="manageOffices()" class="mt-4">Register Offices Now</button>
                     </div>
-                  }
                 </div>
               </div>
             </mat-tab>
           </mat-tab-group>
-        } @else {
+        </div>
+        <div *ngIf="!loading && operatorStatus !== 1">
           <!-- Waiting for Approval -->
           <div class="max-w-xl mx-auto py-24 text-center">
             <div class="w-32 h-32 bg-amber-500/10 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-10 shadow-3xl shadow-amber-500/5">
@@ -915,7 +1084,7 @@ export class AddBusDialogComponent implements OnInit {
               </p>
             </div>
           </div>
-        }
+        </div>
       </div>
     </div>
   `,
@@ -929,15 +1098,47 @@ export class AddBusDialogComponent implements OnInit {
       color: theme('colors.slate.500') !important;
       font-weight: 600 !important;
       height: 60px !important;
+      min-width: 120px !important;
     }
     ::ng-deep .dark-tabs .mat-mdc-tab-labels { gap: 8px; }
     ::ng-deep .dark-tabs .mdc-tab--active {
-      color: white !important;
+      color: theme('colors.indigo.400') !important;
     }
-    ::ng-deep .dark-tabs .mdc-tab-indicator__content--underline {
-      border-top-width: 3px !important;
-      border-color: theme('colors.indigo.500') !important;
-      border-radius: 4px 4px 0 0;
+    ::ng-deep .dark-tabs .mat-mdc-tab:not(.mdc-tab--active) .mat-mdc-tab-indicator {
+      display: none !important;
+    }
+    ::ng-deep .dark-tabs .mdc-tab--active .mat-mdc-tab-indicator {
+      background-color: theme('colors.indigo.500') !important;
+      height: 3px !important;
+    }
+    ::ng-deep .dark-tabs .mat-mdc-tab-content {
+      color: theme('colors.slate.400') !important;
+    }
+    ::ng-deep .dark-tabs .mat-mdc-tab-ripple {
+      display: none !important;
+    }
+    ::ng-deep .custom-dark-field .mat-mdc-text-field-wrapper {
+      background: #1e293b !important;
+      border: 1px solid #334155 !important;
+    }
+    ::ng-deep .custom-dark-field .mat-mdc-form-field-label-wrapper label {
+      color: #94a3b8 !important;
+    }
+    ::ng-deep .custom-dark-field .mat-mdc-form-field-input-control {
+      color: #e2e8f0 !important;
+      background: #1e293b !important;
+    }
+    ::ng-deep .custom-dark-field .mat-mdc-select-panel {
+      background: #1e293b !important;
+      border: 1px solid #334155 !important;
+    }
+    ::ng-deep .custom-dark-field .mat-mdc-option {
+      background: #1e293b !important;
+      color: #e2e8f0 !important;
+    }
+    ::ng-deep .custom-dark-field .mat-calendar {
+      background: #1e293b !important;
+      border: 1px solid #334155 !important;
     }
   `]
 })
@@ -947,15 +1148,75 @@ export class OperatorDashboardComponent implements OnInit {
   operatorOffices: any[] = [];
   operatorBuses: any[] = [];
   operatorSchedules: any[] = [];
+  totalRevenue = 0;
+  fleetStrength = 0;
+  activeTrips = 0;
   loading = true;
+  busSearchQuery = '';
+  scheduleSearchQuery = '';
+
+  get filteredBuses(): any[] {
+    if (!this.busSearchQuery) return this.operatorBuses;
+    const query = this.busSearchQuery.toLowerCase();
+    return this.operatorBuses.filter(bus =>
+      bus.name?.toLowerCase().includes(query)
+    );
+  }
+
+  get filteredSchedules(): any[] {
+    if (!this.scheduleSearchQuery) return this.operatorSchedules;
+    const query = this.scheduleSearchQuery.toLowerCase();
+    return this.operatorSchedules.filter(schedule => {
+      const route = `${schedule.source} to ${schedule.destination}`.toLowerCase();
+      return route.includes(query);
+    });
+  }
+
+  // Computed property to avoid getter issues
+  filteredSchedulesList: any[] = [];
+
+  updateFilteredSchedules() {
+    if (!this.scheduleSearchQuery) {
+      this.filteredSchedulesList = [...this.operatorSchedules];
+    } else {
+      const query = this.scheduleSearchQuery.toLowerCase();
+      this.filteredSchedulesList = this.operatorSchedules.filter(schedule => {
+        const route = `${schedule.source} to ${schedule.destination}`.toLowerCase();
+        return route.includes(query);
+      });
+    }
+  }
+
+  // TrackBy functions for ngFor
+  trackById(index: number, item: any): number { return item.id; }
+  loadingOffices = false;
+  loadingBuses = false;
+  loadingSchedules = false;
+  hasSchedules = false;
+  private _selectedTabIndex = 0;
+
+  set selectedTabIndex(value: number) {
+    this._selectedTabIndex = value;
+    localStorage.setItem('operatorTabIndex', value.toString());
+  }
+  get selectedTabIndex() {
+    return this._selectedTabIndex;
+  }
 
   private authService = inject(AuthService);
   private operatorService = inject(OperatorService);
   private dialog = inject(MatDialog);
   private snack = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+  private ngZone = inject(NgZone);
 
   ngOnInit() {
+    // Restore tab state from localStorage
+    const savedTabIndex = localStorage.getItem('operatorTabIndex');
+    if (savedTabIndex !== null) {
+      this._selectedTabIndex = parseInt(savedTabIndex, 10);
+    }
     // Only show full-page loading if we have no initial state
     if (this.operatorBuses.length === 0) this.loading = true;
 
@@ -963,6 +1224,9 @@ export class OperatorDashboardComponent implements OnInit {
       next: (res) => {
         this.userName = res.data.name;
         this.operatorStatus = res.data.status;
+        this.totalRevenue = res.data.totalRevenue || 0;
+        this.fleetStrength = res.data.busCount || 0;
+        this.activeTrips = res.data.activeTrips || 0;
         if (this.operatorStatus === 1) {
           this.loadOffices();
           this.loadBuses();
@@ -979,33 +1243,56 @@ export class OperatorDashboardComponent implements OnInit {
   }
 
   loadOffices() {
-    this.operatorService.getOffices().subscribe(res => {
-      this.operatorOffices = res.data || [];
-      this.cdr.detectChanges();
+    this.loadingOffices = true;
+    this.operatorService.getOffices().subscribe({
+      next: res => {
+        this.operatorOffices = [...(res.data || [])];
+        this.loadingOffices = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingOffices = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
   loadBuses() {
-    this.operatorService.getBuses().subscribe(res => {
-      this.operatorBuses = res.data || [];
-      this.cdr.detectChanges();
+    this.loadingBuses = true;
+    this.operatorService.getBuses().subscribe({
+      next: res => {
+        this.operatorBuses = [...(res.data || [])];
+        this.loadingBuses = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingBuses = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
   loadSchedules() {
-    this.operatorService.getSchedules().subscribe(res => {
-      this.operatorSchedules = res.data || [];
-      this.cdr.detectChanges();
+    this.loadingSchedules = true;
+    this.operatorService.getSchedules().subscribe({
+      next: res => {
+        this.ngZone.run(() => {
+          this.operatorSchedules = [...(res.data || [])];
+          this.hasSchedules = this.operatorSchedules.length > 0;
+          this.updateFilteredSchedules();
+          this.loadingSchedules = false;
+        });
+      },
+      error: () => {
+        this.ngZone.run(() => {
+          this.loadingSchedules = false;
+        });
+      }
     });
   }
 
   addBus() {
-    this.dialog.open(AddBusDialogComponent, {
-      width: '70vw',
-      panelClass: 'dark-system-dialog'
-    }).afterClosed().subscribe(res => {
-      if (res) this.loadBuses();
-    });
+    this.router.navigate(['/operator/add-bus']);
   }
 
   deleteBus(id: number) {
@@ -1015,6 +1302,18 @@ export class OperatorDashboardComponent implements OnInit {
         this.loadBuses();
       });
     }
+  }
+
+  openDisableBusDialog(bus: any) {
+    this.dialog.open(DisableBusDialogComponent, {
+      width: '500px',
+      data: { bus },
+      panelClass: 'dark-system-dialog'
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        this.loadBuses();
+      }
+    });
   }
 
   addSchedule() {
@@ -1035,6 +1334,10 @@ export class OperatorDashboardComponent implements OnInit {
     }).afterClosed().subscribe(res => {
       if (res) this.loadOffices();
     });
+  }
+
+  viewScheduleSeats(schedule: any) {
+    this.router.navigate(['/operator/seat-layout', schedule.id]);
   }
 
   logout() { this.authService.logout(); }
