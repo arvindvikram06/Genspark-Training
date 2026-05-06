@@ -56,12 +56,16 @@ namespace WordGame.Services
                         if (guess.Equals(game.SecretWord))
                         {
                             PrintComment(i);
+                            GetScore(game.Attempts.Count - 1);
+
                             break;
                         }
                         if (i == game.MaxAttempts)
                         {
                             Console.WriteLine($"word was: {game.SecretWord}");
                             PrintComment(i);
+                            GetScore(game.Attempts.Count);
+
                         }
                     }
                     catch (InvalidGuessException ex)
@@ -131,6 +135,11 @@ namespace WordGame.Services
             }
 
             Console.WriteLine();
+        }
+
+        private void GetScore(int attempts)
+        {
+            Console.WriteLine($"Your score is : {100 - (attempts * 10)}");
         }
 
         private void PrintComment(int attempt)
