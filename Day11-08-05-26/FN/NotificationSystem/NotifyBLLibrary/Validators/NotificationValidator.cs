@@ -14,7 +14,7 @@ public static class NotificationValidator
     {
         if (string.IsNullOrWhiteSpace(message))
             throw new ValidationException("message cannot be empty");
-        if (message.Length < 3)
+        if (message.Length < 5)
             throw new ValidationException("message must be at least 5 characters long");
         if (message.Length > 160)
             throw new ValidationException("message cannot exceed 100 characters");

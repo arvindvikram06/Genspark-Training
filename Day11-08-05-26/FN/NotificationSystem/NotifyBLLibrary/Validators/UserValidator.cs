@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using NotifyModelLibrary;
 using NotifyModelLibrary.Exceptions;
 
@@ -16,18 +17,19 @@ public static class UserValidator
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ValidationException("Name cannot be empty");
-        if (name.Length < 2)
+        if (name.Length < 3)
             throw new ValidationException("Name must be at least 3 characters long");
         if (name.Length > 100)
             throw new ValidationException("Name cannot exceed 100 characters");
     }
 
-    public static void ValidateEmail(string email)
+     public static void ValidateEmail(string email)
     {
         if (string.IsNullOrWhiteSpace(email))
             throw new ValidationException("Email cannot be empty");
 
-        if (!email.Contains("@") || !email.Contains("."))
+        string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+        if (!Regex.IsMatch(email, emailPattern))
             throw new ValidationException("Invalid email format");
     }
 
