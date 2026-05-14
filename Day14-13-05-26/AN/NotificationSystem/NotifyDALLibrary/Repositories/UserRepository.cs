@@ -64,7 +64,7 @@ namespace NotifyDALLibrary.Repositories
         {
             try
             {
-                return _context.Users.ToList();
+                return _context.Users.AsNoTracking().ToList();
             }
             catch (Exception ex)
             {

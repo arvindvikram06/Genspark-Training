@@ -61,7 +61,7 @@ public class NotificationRepository : IRepository<int, Notification>
     {
         try
         {
-            return _context.Notifications.ToList();
+            return _context.Notifications.AsNoTracking().ToList();
         }
         catch (Exception ex)
         {
