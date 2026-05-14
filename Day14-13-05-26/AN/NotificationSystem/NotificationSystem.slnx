@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="NotifyBLLibrary/NotifyBLLibrary.csproj" />
+  <Project Path="NotifyDALLibrary/NotifyDALLibrary.csproj" />
+  <Project Path="NotifyModelLibrary/NotifyModelLibrary.csproj" />
+  <Project Path="NotifyFELibrary/NotifyFELibrary.csproj" />
+</Solution>
