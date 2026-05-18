@@ -1,19 +1,16 @@
-# Library Management System
+# Community Library Membership & Book Lending System
 
 A C# .NET Core console application using Entity Framework Core and PostgreSQL to manage library operations.
 
-
-
 ## ER Diagram
 
-The database structure is designed to support members, memberships, books, copies, borrowings, and damage reports.
 [ER Diagram](ERDiagram.png)
 
 ## Functional Requirements
 
 ### Member Functional Requirements
 
-Note: For simplicity, we used only email ID for login.
+Note: For simplicity, App uses only email ID for login.
 
 * Register as a new member with a name, email, and phone number.
 * View personal profile and current active membership status.
@@ -22,7 +19,7 @@ Note: For simplicity, we used only email ID for login.
 * View available books that have copies currently in stock.
 * Borrow a book copy under active membership limits.
 * View currently borrowed books and their due dates.
-* Return a checked-out book.
+* Return a borrowed book.
 * View and pay pending fines.
 
 ### Admin Functional Requirements
@@ -100,6 +97,21 @@ Category ID:
 
 [Validation Error] Book title and author cannot be empty.
 ```
+
+## Exception Handling
+
+The application implements a robust, three-tier exception handling architecture that enforces a clean **Separation of Concerns** across all layers:
+
+### 1. Separation of Concerns & Exception Propagation Flow
+* **Data Access Layer (DALLibrary):** Catches database/EF Core errors and throws a custom `RepositoryException` to shield raw internals.
+* **Business Logic Layer (BLLibrary):** Throws `ValidationException` for business rule violations. Catches `RepositoryException` from the DAL and wraps it into a `ServiceException`.
+* **Presentation Layer (FELibrary):** Passes bubbled exceptions to `ConsoleHelper.HandleException` to display clear, colorized, user-friendly alerts instead of technical stack traces.
+
+### 2. Custom Exceptions Reference
+* **ValidationException:** Thrown by BLL when validation or borrowing rules fail. Outputs prefix: `[Validation Error]`.
+* **DataNotFoundException:** Thrown by BLL when a requested record (Member, Book, or Category) is missing. Outputs prefix: `[Not Found]`.
+* **RepositoryException:** Thrown by DAL (`SaveChanges()`) when a raw database query or transactional operation fails.
+* **ServiceException:** Wraps BLL service execution failures or caught repository errors. Outputs prefix: `[Service Error]`.
 
 ## How to Run the Code
 

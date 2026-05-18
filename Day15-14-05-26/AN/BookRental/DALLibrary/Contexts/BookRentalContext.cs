@@ -34,7 +34,7 @@ namespace DALLibrary.Contexts
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(
-                "Host=localhost;Port=5432;Database=BookRental;Username=postgres;Password=Arvind"
+                "Host=localhost;Port=5432;Database=yourdatabase;Username=yourusername;Password=yourpassword"
             );
         }
 
