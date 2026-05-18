@@ -19,8 +19,8 @@ namespace DALLibrary.Contexts
             // Seed Memberships
             modelBuilder.Entity<Membership>().HasData(
                 new Membership { MembershipId = 1, MembershipName = "Basic", MembershipPrice = 500m, BorrowLimit = 2, BorrowDaysLimit = 7 },
-                new Membership { MembershipId = 2, MembershipName = "Premium", MembershipPrice = 1500m, BorrowLimit = 5, BorrowDaysLimit = 14 },
-                new Membership { MembershipId = 3, MembershipName = "Elite", MembershipPrice = 3000m, BorrowLimit = 10, BorrowDaysLimit = 30 }
+                new Membership { MembershipId = 2, MembershipName = "Student", MembershipPrice = 1000m, BorrowLimit = 3, BorrowDaysLimit = 10 },
+                new Membership { MembershipId = 3, MembershipName = "Premium", MembershipPrice = 2000m, BorrowLimit = 5, BorrowDaysLimit = 15 }
             );
 
             // Seed Books
