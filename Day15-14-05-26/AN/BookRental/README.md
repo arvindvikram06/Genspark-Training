@@ -49,7 +49,7 @@ Failed to borrow: You have already borrowed this book and have not returned it y
 ```
 
 ### 2. Membership Tier Borrowing Limit Exceeded
-Basic members are restricted to 2 active borrowings, students to 3, and premium to 5.
+Basic members are restricted to 2 active borrowings (7-day duration limit), Student to 3 (10-day duration limit), and Premium to 5 (15-day duration limit).
 ```text
 Select an option: 5
 --- Borrow a Book ---
