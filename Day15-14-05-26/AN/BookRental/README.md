@@ -66,7 +66,10 @@ Enter Book ID to borrow: 2
 Failed to borrow: Member has unpaid fines exceeding ₹500. Please pay fines to continue borrowing.
 ```
 
-### 4. Deactivating a Member Blocks Authentication
+### 4. Late Return Fines
+If a book is returned after its due date, the system automatically generates a pending fine calculated at a rate of **₹10 per day late**.
+
+### 5. Deactivating a Member Blocks Authentication
 Deactivating a member soft-deletes their account, making them unable to log in.
 ```text
 Select an option: 4
