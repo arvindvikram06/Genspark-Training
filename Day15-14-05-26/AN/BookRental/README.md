@@ -166,4 +166,4 @@ Here are the output screenshots showing the console application interface:
 ![Membership Menu](Screenshots/MembershipMenu.png)
 
 ## Verification Logs
-For further outputs check [Terminal_log.txt](Terminal_log.txt).
+For further outputs check [Terminal_output.txt](Terminal_output.txt).

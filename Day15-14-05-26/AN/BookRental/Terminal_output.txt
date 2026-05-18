@@ -1,5 +1,4 @@
 
-Welcome to Library Management System
 === Login Menu ===
 1. Admin operation
 2. Register
