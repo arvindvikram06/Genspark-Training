@@ -1,0 +1,1215 @@
+
+Welcome to Library Management System
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 2
+--- Register New Member ---
+Enter Name: bevikram
+Enter Email: vikram@gmail.com
+Enter Phone Number: 90038478392
+
+member registered successfully!
+
+press any key to continue...
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 1
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 4
+=== User/Member Management Menu ===
+1. Find Member by ID
+2. Find Member by Email or Phone
+3. GetAllMembers
+4. Deactivate Member
+0. Back to Main Menu
+
+Select an option: 3
+--- Members List ---
+
+------
+ID: 1
+Name: Alice Smith
+Email: alice@example.com
+Phone: 1234567890
+Status: Active
+
+------
+ID: 2
+Name: Bob Jones
+Email: bob@example.com
+Phone: 0987654321
+Status: Active
+
+------
+ID: 3
+Name: arvind
+Email: arvind@gmail.com
+Phone: 9238478219
+Status: Active
+
+------
+ID: 4
+Name: user1
+Email: user1@gmail.com
+Phone: 9238849239
+Status: Active
+
+------
+ID: 5
+Name: tony
+Email: tony@gmail.com
+Phone: 6783489342
+Status: Active
+
+------
+ID: 6
+Name: vikram
+Email: vikram@gmail.com
+Phone: 9003847839
+Status: Active
+
+Press any key to continue...
+=== User/Member Management Menu ===
+1. Find Member by ID
+2. Find Member by Email or Phone
+3. GetAllMembers
+4. Deactivate Member
+0. Back to Main Menu
+
+Select an option: 0
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 0
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 3
+Enter your email: vikram@gmail.com
+Login Successful
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 1
+--- My Profile ---
+ID: 6
+Name: vikram
+Email: vikram@gmail.com
+Phone: 9003847839
+Membership Status: NOT_PURCHASED
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 2
+--- Manage Membership ---
+1. View My Membership
+2. Purchase/Upgrade Membership
+0. Back
+
+Select an option: 1
+No active membership.
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 2
+--- Manage Membership ---
+1. View My Membership
+2. Purchase/Upgrade Membership
+0. Back
+
+Select an option: 2
+
+--- Available Memberships ---
+ID: 1 | Name: basic | Price: ₹600.00 | Limit: 2 books | Duration: 7 days limit per book
+ID: 2 | Name: student | Price: ₹300.00 | Limit: 3 books | Duration: 10 days limit per book
+ID: 3 | Name: premium | Price: ₹1000.00 | Limit: 5 books | Duration: 15 days limit per book
+ID: 5 | Name: summerplan | Price: ₹160.00 | Limit: 2 books | Duration: 4 days limit per book
+
+Enter Membership ID to purchase/upgrade: 1
+Membership purchased successfully and payment recorded!
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 2
+--- Manage Membership ---
+1. View My Membership
+2. Purchase/Upgrade Membership
+0. Back
+
+Select an option: 1
+Membership: basic
+Borrow Limit: 2
+Days Limit: 7
+Start Date: 18/05/2026 5:05:36 PM
+End Date: 18/08/2026 5:05:36 PM
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 3
+--- Search Books ---
+Enter Title or Author to search: harry
+ID: 1 | Title: Harry Potter and the Sorcerer's Stone | Author: J.K. Rowling
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 3
+--- Search Books ---
+Enter Title or Author to search: vinv6ce gillian
+ID: 5 | Title: BreakingBad | Author: vince gillian
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 564
+--- Available Books ---
+ID: 2 | Title: Dune | Author: Frank Herbert
+ID: 5 | Title: BreakingBad | Author: vince gillian
+ID: 3 | Title: Sherlock Holmes | Author: Arthur Conan Doyle
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 5
+--- Borrow a Book ---
+Enter Book ID to borrow: 5
+Successfully borrowed the book!
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 5
+--- Borrow a Book ---
+Enter Book ID to borrow: 5
+Failed to borrow: You have already borrowed this book and have not returned it yet.
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 5
+--- Borrow a Book ---
+Enter Book ID to borrow: 2
+Successfully borrowed the book!
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 6
+--- My Borrowed Books ---
+
+Borrowing ID: 8 | Copy ID: 7 |
+Book: 'BreakingBad' by vince gillian|
+Borrowed: 18/05/2026 | Due: 25/05/2026 |
+Status: ACTIVE
+
+Borrowing ID: 9 | Copy ID: 3 |
+Book: 'Dune' by Frank Herbert|
+Borrowed: 18/05/2026 | Due: 25/05/2026 |
+Status: ACTIVE
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 5
+--- Borrow a Book ---
+Enter Book ID to borrow: 3
+Failed to borrow: Member has reached the maximum borrow limit.
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 766
+--- My Borrowed Books ---
+
+Borrowing ID: 8 | Copy ID: 7 |
+Book: 'BreakingBad' by vince gillian|
+Borrowed: 18/05/2026 | Due: 25/05/2026 |
+Status: ACTIVE
+
+Borrowing ID: 9 | Copy ID: 3 |
+Book: 'Dune' by Frank Herbert|
+Borrowed: 18/05/2026 | Due: 25/05/2026 |
+Status: ACTIVE
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 7
+--- Return a Book ---
+Enter Copy ID to return: 7
+Successfully returned the book!
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 060
+
+Press any key to continue...
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 1
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 2
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 5
+--- Mark Book Copy as Damaged ---
+Enter Book Copy ID: 7
+Enter User ID to penalize: 6
+Enter Damage Description: torned the outer cover
+Enter Severity (0: LOW, 1: MEDIUM, 2: HIGH): 1
+Book copy marked as damaged, and fine generated successfully.
+
+Press any key to continue...
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 7
+--- View Damage History ---
+Enter Book Copy ID: 7
+Damage ID: 4 | User: 6 | Severity: MEDIUM | Desc: torned the outer cover | Date: 18/05/2026 5:11:18 PM
+
+Press any key to continue...
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 0
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 0
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 3
+Enter your email: vikram@gmail.com
+Login Successful
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 8
+--- Fine Management ---
+1. View Pending Fines & Pay
+2. View Fine History
+0. Back
+
+Select an option: 1
+Fine ID: 4 | Amount: ₹300 | Reason: DAMAGED_BOOK
+
+Enter Fine ID to pay:
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 8
+--- Fine Management ---
+1. View Pending Fines & Pay
+2. View Fine History
+0. Back
+
+Select an option: 1
+Fine ID: 4 | Amount: ₹300 | Reason: DAMAGED_BOOK
+
+Enter Fine ID to pay: 4
+Fine paid successfully!
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 8
+--- Fine Management ---
+1. View Pending Fines & Pay
+2. View Fine History
+0. Back
+
+Select an option: 2
+Fine ID: 4 | Amount: ₹300 | Reason: DAMAGED_BOOK | Status: PAID
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 0
+
+Press any key to continue...
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 3
+Enter your email: vikram@gmail.com
+Login Successful
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 4
+--- Available Books ---
+ID: 5 | Title: BreakingBad | Author: vince gillian
+ID: 3 | Title: Sherlock Holmes | Author: Arthur Conan Doyle
+
+Press any key to continue...
+=== Member Dashboard ===
+1. View Profile
+2. Manage Membership
+3. Search Books
+4. View Available Books
+5. Borrow Book
+6. View Borrowed Books
+7. Return a Book
+8. Manage Fines
+0. Logout
+
+Select an option: 0
+
+Press any key to continue...
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 1
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 1
+=== Membership Management ===
+1. Create Membership
+2. View All Memberships
+3. Update Membership
+4. Deactivate Membership
+5. Activate Membership
+0. Back to Admin Menu
+
+Select an option: 2
+--- View All Memberships ---
+ID: 1, Name: basic, Price: 600.00, Borrow Limit: 2, Borrow Days Limit: 7, Status:True
+ID: 2, Name: student, Price: 300.00, Borrow Limit: 3, Borrow Days Limit: 10, Status:True
+ID: 3, Name: premium, Price: 1000.00, Borrow Limit: 5, Borrow Days Limit: 15, Status:True
+ID: 5, Name: summerplan, Price: 160.00, Borrow Limit: 2, Borrow Days Limit: 4, Status:True
+ID: 4, Name: freetrial, Price: 0.00, Borrow Limit: 3, Borrow Days Limit: 4, Status:False
+
+Press any key to continue...
+=== Membership Management ===
+1. Create Membership
+2. View All Memberships
+3. Update Membership
+4. Deactivate Membership
+5. Activate Membership
+0. Back to Admin Menu
+
+Select an option: 0
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 2
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 1
+--- Add New Book ---
+Title:
+Author:
+ISBN:
+Published Year:
+Category ID:
+39;49m93m
+[Validation Error] Book title and author cannot be empty.
+39;49m
+Press any key to continue...
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 0
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 5
+=== Category Management ===
+1. Add Category
+2. View All Categories
+3. Update Category Name
+4. Delete Category
+0. Back to Admin Menu
+
+Select an option: 1
+--- Add New Category ---
+Category Name: acaction
+Category added successfully.
+
+Press any key to continue...
+=== Category Management ===
+1. Add Category
+2. View All Categories
+3. Update Category Name
+4. Delete Category
+0. Back to Admin Menu
+
+Select an option: 2
+--- View All Categories ---
+ID: 1 | Name: Fantasy
+ID: 2 | Name: Science Fiction
+ID: 3 | Name: Mystery
+ID: 4 | Name: Non-Fiction
+ID: 5 | Name: action
+
+Press any key to continue...
+=== Category Management ===
+1. Add Category
+2. View All Categories
+3. Update Category Name
+4. Delete Category
+0. Back to Admin Menu
+
+Select an option: 0
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 2
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 1
+--- Add New Book ---
+Title: missonion imposible
+Author: christopher
+ISBN: 978-949340949034
+Published Year: 2014
+Category ID: 5
+Book added successfully.
+
+Press any key to continue...
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 2
+--- Add Book Copies ---
+Enter Book ID: 7
+Enter number of copies to add: 10
+10 copies added successfully.
+
+Press any key to continue...
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 4
+Enter the Book id to view its copies
+7
+10
+CopyId: 21, BookId: 7, CopyNumber: f44960e7, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 22, BookId: 7, CopyNumber: fe837285, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 23, BookId: 7, CopyNumber: 04961ea2, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 24, BookId: 7, CopyNumber: 5ae5a28f, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 25, BookId: 7, CopyNumber: 953311f3, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 26, BookId: 7, CopyNumber: 3847f9f2, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 27, BookId: 7, CopyNumber: b2081ec4, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 28, BookId: 7, CopyNumber: 10753a45, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 29, BookId: 7, CopyNumber: d538647f, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+CopyId: 30, BookId: 7, CopyNumber: 63c94aaa, Status: AVAILABLE, AddedDate: 18/05/2026 5:15:19 PM
+
+Press any key to continue...
+=== Book Management ===
+1. Add Book
+2. Add Copies to Book
+3. View All Books
+4. View a Book's copies
+5. Mark Copy as Damaged
+6. Mark Copy as Availble
+7. View Damage History
+0. Back to Admin Menu
+
+Select an option: 760
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 3
+=== Reports ===
+1. Books currently borrowed
+2. Overdue borrowed books
+3. Members with pending fines
+4. Most borrowed books
+5. Available books by category
+6. Member borrowing history
+0. Back to Admin Menu
+
+Select an option: 1
+--- Currently Borrowed Books ---
+Borrowing ID: 4
+Member Name: arvind
+Book Title: Harry Potter and the Sorcerer's Stone
+Borrow Date: 2026-05-18
+-----------------------------------
+Borrowing ID: 5
+Member Name: Bob Jones
+Book Title: Harry Potter and the Sorcerer's Stone
+Borrow Date: 2026-05-18
+-----------------------------------
+Borrowing ID: 9
+Member Name: vikram
+Book Title: Dune
+Borrow Date: 2026-05-18
+-----------------------------------
+
+Press any key to continue...
+=== Reports ===
+1. Books currently borrowed
+2. Overdue borrowed books
+3. Members with pending fines
+4. Most borrowed books
+5. Available books by category
+6. Member borrowing history
+0. Back to Admin Menu
+
+Select an option: 2
+--- Overdue Books ---
+No books are currently overdue.
+
+Press any key to continue...
+=== Reports ===
+1. Books currently borrowed
+2. Overdue borrowed books
+3. Members with pending fines
+4. Most borrowed books
+5. Available books by category
+6. Member borrowing history
+0. Back to Admin Menu
+
+Select an option: 3
+--- Members With Pending Fines ---
+Member ID: 1
+Name: Alice Smith
+Email: alice@example.com
+Total Fine: $1000.00
+-----------------------------------
+
+Press any key to continue...
+=== Reports ===
+1. Books currently borrowed
+2. Overdue borrowed books
+3. Members with pending fines
+4. Most borrowed books
+5. Available books by category
+6. Member borrowing history
+0. Back to Admin Menu
+
+Select an option: 4
+--- Most Borrowed Books ---
+Book ID: 1
+Title: Harry Potter and the Sorcerer's Stone
+Author: J.K. Rowling
+Times Borrowed: 5
+-----------------------------------
+Book ID: 5
+Title: BreakingBad
+Author: vince gillian
+Times Borrowed: 2
+-----------------------------------
+Book ID: 2
+Title: Dune
+Author: Frank Herbert
+Times Borrowed: 2
+-----------------------------------
+Book ID: 7
+Title: mission imposible
+Author: christopher
+Times Borrowed: 0
+-----------------------------------
+Book ID: 4
+Title: Atomic Habits
+Author: James Clear
+Times Borrowed: 0
+-----------------------------------
+Book ID: 3
+Title: Sherlock Holmes
+Author: Arthur Conan Doyle
+Times Borrowed: 0
+-----------------------------------
+Book ID: 6
+Title: psychology of money
+Author: morgan housel
+Times Borrowed: 0
+-----------------------------------
+
+Press any key to continue...
+=== Reports ===
+1. Books currently borrowed
+2. Overdue borrowed books
+3. Members with pending fines
+4. Most borrowed books
+5. Available books by category
+6. Member borrowing history
+0. Back to Admin Menu
+
+Select an option: 5
+--- Available Books By Category ---
+Category ID: 1
+Category Name: Fantasy
+Available Copies: 0
+-----------------------------------
+Category ID: 2
+Category Name: Science Fiction
+Available Copies: 0
+-----------------------------------
+Category ID: 3
+Category Name: Mystery
+Available Copies: 14
+-----------------------------------
+Category ID: 4
+Category Name: Non-Fiction
+Available Copies: 0
+-----------------------------------
+Category ID: 5
+Category Name: action
+Available Copies: 10
+-----------------------------------
+
+Press any key to continue...
+=== Reports ===
+1. Books currently borrowed
+2. Overdue borrowed books
+3. Members with pending fines
+4. Most borrowed books
+5. Available books by category
+6. Member borrowing history
+0. Back to Admin Menu
+
+Select an option: 6
+--- Member Borrowing History ---
+Enter Member ID: 6
+Borrowing ID: 9
+Book Title: Dune
+Borrow Date: 2026-05-18
+Due Date: 2026-05-25
+Status: ACTIVE
+-----------------------------------
+Borrowing ID: 8
+Book Title: BreakingBad
+Borrow Date: 2026-05-18
+Due Date: 2026-05-25
+Status: RETURNED
+-----------------------------------
+
+Press any key to continue...
+=== Reports ===
+1. Books currently borrowed
+2. Overdue borrowed books
+3. Members with pending fines
+4. Most borrowed books
+5. Available books by category
+6. Member borrowing history
+0. Back to Admin Menu
+
+Select an option: 0
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 4
+=== User/Member Management Menu ===
+1. Find Member by ID
+2. Find Member by Email or Phone
+3. GetAllMembers
+4. Deactivate Member
+0. Back to Main Menu
+
+Select an option: 2
+--- Find Member by Email or Phone ---
+1. Search by Email
+2. Search by Phone Number
+
+Select option: ar1i6n
+Enter Email: arvind@gmail.com
+
+------
+ID: 3
+Name: arvind
+Email: arvind@gmail.com
+Phone: 9238478219
+Status: Active
+
+Press any key to continue...
+=== User/Member Management Menu ===
+1. Find Member by ID
+2. Find Member by Email or Phone
+3. GetAllMembers
+4. Deactivate Member
+0. Back to Main Menu
+
+Select an option: 3
+--- Members List ---
+
+------
+ID: 1
+Name: Alice Smith
+Email: alice@example.com
+Phone: 1234567890
+Status: Active
+
+------
+ID: 2
+Name: Bob Jones
+Email: bob@example.com
+Phone: 0987654321
+Status: Active
+
+------
+ID: 3
+Name: arvind
+Email: arvind@gmail.com
+Phone: 9238478219
+Status: Active
+
+------
+ID: 4
+Name: user1
+Email: user1@gmail.com
+Phone: 9238849239
+Status: Active
+
+------
+ID: 5
+Name: tony
+Email: tony@gmail.com
+Phone: 6783489342
+Status: Active
+
+------
+ID: 6
+Name: vikram
+Email: vikram@gmail.com
+Phone: 9003847839
+Status: Active
+
+Press any key to continue...
+=== User/Member Management Menu ===
+1. Find Member by ID
+2. Find Member by Email or Phone
+3. GetAllMembers
+4. Deactivate Member
+0. Back to Main Menu
+
+Select an option: 3
+--- Members List ---
+
+------
+ID: 1
+Name: Alice Smith
+Email: alice@example.com
+Phone: 1234567890
+Status: Active
+
+------
+ID: 2
+Name: Bob Jones
+Email: bob@example.com
+Phone: 0987654321
+Status: Active
+
+------
+ID: 3
+Name: arvind
+Email: arvind@gmail.com
+Phone: 9238478219
+Status: Active
+
+------
+ID: 4
+Name: user1
+Email: user1@gmail.com
+Phone: 9238849239
+Status: Active
+
+------
+ID: 5
+Name: tony
+Email: tony@gmail.com
+Phone: 6783489342
+Status: Active
+
+------
+ID: 6
+Name: vikram
+Email: vikram@gmail.com
+Phone: 9003847839
+Status: Active
+
+Press any key to continue...
+=== User/Member Management Menu ===
+1. Find Member by ID
+2. Find Member by Email or Phone
+3. GetAllMembers
+4. Deactivate Member
+0. Back to Main Menu
+
+Select an option: 4
+--- Delete Member ---
+Enter Member ID: 5
+Are you sure you want to deactivate member 5? (y/n): y
+
+Member deactivated successfully!
+
+Press any key to continue...
+=== User/Member Management Menu ===
+1. Find Member by ID
+2. Find Member by Email or Phone
+3. GetAllMembers
+4. Deactivate Member
+0. Back to Main Menu
+
+Select an option: 0
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 0
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 3
+Enter your email: tony@gmail.com
+
+[Not Found] Member with 'Email : tony@gmail.com' not found.
+
+Press any key to continue...
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 1
+=== Admin Menu ===
+1. Membership Management
+2. Book Management
+3. Reports
+4. Member Management
+5. Category Management
+0. Logout
+
+Select an option: 0
+=== Login Menu ===
+1. Admin operation
+2. Register
+3. Login
+0. Exit
+
+Select an option: 0
+Goodbye!
+0m27m24mJarvindvikramms@L16017R7WW-arvindvikramms FELibrary % K?2004hexit?2004l

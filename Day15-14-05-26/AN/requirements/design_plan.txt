@@ -1,0 +1,98 @@
+
+DB design and relations
+
+possible tables:
+
+member -> userid(pk),name,email,phnumber,status, membershiptype(fk),membership_status,duration_days.
+
+membership -> membershipid(pk) , membership_name , membership_price, borrow_limit, Days_limit
+
+book -> bookid(pk),title,author,genre,ISBN,published_year
+
+book_copies -> id(pk),bookid(fk),copynumber,copy_status(notavailable,available),Added date
+
+book_damage_history -> id(pk), book_copy_id(FK),reported_user(FK),damage_description,sevierity, damage date.
+
+borrowing -> borrowingid(pk),memberid, copyId , borrowDate, dueDate, returnedDate.
+
+Fines -> fineid(pk), userid, borrowingid , fine_amount , reason(latereturn or damaged), paid_status
+
+FinePayments -> id(pk),paymentId, fine id, paidAmount
+
+MembershipPayment -> id(pk),paymentId,subscriptionid, paidamount, startdate , enddate.
+
+
+enums: 
+
+membership_status -> ACTIVE, EXPIRED
+
+book_copy status -> AVAILABLE , NOT_AVAILABLE,BORROWED
+
+fine_status -> PENDING,PAID
+
+fine_reason -> LATE_RETURN,DAMAGED_BOOK
+
+borrowing_status -> ACTIVE, RETURNED , OVERDUE
+
+
+
+
+
+
+relations
+
+member n -> 1  membership
+
+member 1 -> N Fines
+
+member 1 -> N payments
+
+book 1 -> N book_copies
+
+book_copies 1 -> N book_damage_history
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

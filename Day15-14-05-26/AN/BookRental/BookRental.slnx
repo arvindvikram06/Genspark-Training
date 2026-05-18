@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="ModelLibrary/ModelLibrary.csproj" />
+  <Project Path="BLLibrary/BLLibrary.csproj" />
+  <Project Path="FELibrary/FELibrary.csproj" />
+  <Project Path="DALLibrary/DALLibrary.csproj" />
+</Solution>
