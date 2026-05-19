@@ -6,6 +6,58 @@ A C# .NET Core console application using Entity Framework Core and PostgreSQL to
 
 [ER Diagram](ERDiagram.png)
 
+### Table Relationships
+
+* **Membership (1) to Member (Many):**  
+  A membership tier can be assigned to multiple members.
+
+* **Member (1) to Borrowing (Many):**  
+  A member can borrow multiple books over time.
+
+* **BookCategory (1) to Book (Many):**  
+  A category can contain multiple books.
+
+* **Book (1) to BookCopy (Many):**  
+  A single book title can have multiple physical copies.
+
+* **BookCopy (1) to Borrowing (Many):**  
+  A physical copy can participate in multiple borrowing records over time.
+
+* **Borrowing (1) to Fine (Many):**  
+  A borrowing record can generate multiple fines such as late return fines or damage fines.
+
+* **Member (1) to MembershipPayment (Many):**  
+  A member can make multiple membership payments over time.
+
+* **BookCopy (1) to BookDamageHistory (Many):**  
+  A book copy can have multiple damage reports.
+
+* **Member (1) to BookDamageHistory (Many):**  
+  A member can be associated with multiple damage incidents.
+
+---
+
+### Many-to-Many Relationships
+
+* **Member to BookCopy (Many-to-Many):**  
+  Resolved through the `Borrowing` junction entity.
+
+  - One member can borrow many book copies.
+  - One book copy can be borrowed by many members over time.
+
+---
+
+### History Entity
+
+* **BookDamageHistory:**  
+  Acts as a damage tracking entity that records:
+  
+  - damaged copy
+  - responsible member
+  - severity
+  - damage description
+  - damage date
+
 ## Functional Requirements
 
 ### Member Functional Requirements
@@ -151,22 +203,100 @@ dotnet run --project FELibrary
 
 ## Application Output Screenshots
 
-Here are the output screenshots showing the console application interface:
+Here are the output screenshots showing the complete console application interface and operational scenarios:
 
-### Login Menu
+### 1. Main Menus
+
+#### Login Menu
 ![Login Menu](Screenshots/LoginMenu.png)
 
-### Admin Menu
+#### Admin Menu
 ![Admin Menu](Screenshots/AdminMenu.png)
 
-### Book Management Menu
+---
+
+### 2. Member Operations
+
+#### Register Member
+![Register Member](Screenshots/register.png)
+
+#### Member Profile
+![Member Profile](Screenshots/profile.png)
+
+#### Purchase Membership
+![Purchase Membership](Screenshots/membership.png)
+
+#### Available Books
+![Available Books](Screenshots/availablebooks.png)
+
+#### Borrow Book
+![Borrow Book](Screenshots/BorrowBook.png)
+
+#### Active Borrowings
+![Active Borrowings](Screenshots/borrowedbooks.png)
+
+#### Return Book
+![Return Book](Screenshots/returnbooks.png)
+
+---
+
+### 3. Admin Catalog & Tiers Control
+
+#### Book Management
 ![Book Management](Screenshots/BookManagement.png)
 
-### Book Copies Listing
-![Book With Copies](Screenshots/BookWithCopies.png)
+#### Add Book Copies
+![Add Book Copies](Screenshots/AddCopies.png)
 
-### Membership Management Menu
+#### Book Copies Listing
+![Book Copies Listing](Screenshots/BookWithCopies.png)
+
+#### Membership Menu
 ![Membership Menu](Screenshots/MembershipMenu.png)
+
+#### Create Membership
+![Create Membership](Screenshots/membershipcreation.png)
+
+#### Memberships List
+![Memberships List](Screenshots/membershipslist.png)
+
+#### Mark Book Damaged
+![Mark Book Damaged](Screenshots/markBooksDamaged.png)
+
+#### Book Damage History
+![Book Damage History](Screenshots/DamageHistoryOfBook.png)
+
+---
+
+### 4. Policy Constraint Warnings
+
+#### Duplicate Borrowing Blocked
+![Duplicate Borrowing Blocked](Screenshots/alreadyborrowd.png)
+
+#### Borrow Limit Exceeded
+![Borrow Limit Exceeded](Screenshots/borrowlimitreached.png)
+
+#### Fine Payment Blocked
+![Fine Payment Blocked](Screenshots/finepaymentfordamage.png)
+
+#### Late Return Fine
+![Late Return Fine](Screenshots/latereturnfine.png)
+
+---
+
+### 5. Admin Reports
+
+#### Books Currently Borrowed
+![Books Currently Borrowed](Screenshots/BooksCurrentlyBorrowed.png)
+
+#### Overdue Books
+![Overdue Books](Screenshots/OverdueBooks.png)
+
+#### Members with Pending Fines
+![Members with Pending Fines](Screenshots/MembersWithPendingFines.png)
+
+#### Member Borrowing History
+![Member Borrowing History](Screenshots/MemberBorrowHistory.png)
 
 ## Verification Logs
 For further outputs check [Terminal_output.txt](Terminal_output.txt).
