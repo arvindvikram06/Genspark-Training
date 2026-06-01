@@ -1,0 +1,36 @@
+2026-05-29 00:39:28.946 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5091/chathub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-05-29 00:39:28.950 +05:30 [INF] Executed endpoint '/chathub'
+2026-05-29 00:39:28.960 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5091/chathub?id=UygUdPng2rNCVee2ymxInQ - 101 null null 1546673.289ms
+2026-05-29 00:39:28.960 +05:30 [INF] CORS policy execution failed.
+2026-05-29 00:39:28.961 +05:30 [INF] Request origin http://localhost:5091 does not have permission to access the resource.
+2026-05-29 00:39:28.961 +05:30 [INF] Executing endpoint '/chathub/negotiate'
+2026-05-29 00:39:28.962 +05:30 [INF] Executed endpoint '/chathub/negotiate'
+2026-05-29 00:39:28.962 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5091/chathub/negotiate?negotiateVersion=1 - 200 316 application/json 15.6548ms
+2026-05-29 00:39:28.965 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5091/chathub?id=NkjQ806yEF0SwvTH3YzrHg - null null
+2026-05-29 00:39:28.966 +05:30 [INF] CORS policy execution failed.
+2026-05-29 00:39:28.966 +05:30 [INF] Request origin http://localhost:5091 does not have permission to access the resource.
+2026-05-29 00:39:28.966 +05:30 [INF] Executing endpoint '/chathub'
+2026-05-29 00:55:01.873 +05:30 [INF] Executed endpoint '/chathub'
+2026-05-29 00:55:01.880 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5091/chathub?id=NkjQ806yEF0SwvTH3YzrHg - 101 null null 924598.5937ms
+2026-05-29 00:55:03.057 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5091/chathub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-05-29 00:55:03.058 +05:30 [INF] CORS policy execution failed.
+2026-05-29 00:55:03.058 +05:30 [INF] Request origin http://localhost:5091 does not have permission to access the resource.
+2026-05-29 00:55:03.058 +05:30 [INF] Executing endpoint '/chathub/negotiate'
+2026-05-29 00:55:03.059 +05:30 [INF] Executed endpoint '/chathub/negotiate'
+2026-05-29 00:55:03.059 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5091/chathub/negotiate?negotiateVersion=1 - 200 316 application/json 1.8722ms
+2026-05-29 00:55:03.064 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5091/chathub?id=iH17OTXMGSLLu2oZs-PXsA - null null
+2026-05-29 00:55:03.066 +05:30 [INF] CORS policy execution failed.
+2026-05-29 00:55:03.066 +05:30 [INF] Request origin http://localhost:5091 does not have permission to access the resource.
+2026-05-29 00:55:03.067 +05:30 [INF] Executing endpoint '/chathub'
+2026-05-29 01:12:07.490 +05:30 [INF] Request starting HTTP/1.1 POST http://localhost:5091/chathub/negotiate?negotiateVersion=1 - text/plain;charset=UTF-8 0
+2026-05-29 01:12:07.495 +05:30 [INF] Executed endpoint '/chathub'
+2026-05-29 01:12:07.497 +05:30 [INF] Request finished HTTP/1.1 GET http://localhost:5091/chathub?id=iH17OTXMGSLLu2oZs-PXsA - 101 null null 113857.2096ms
+2026-05-29 01:12:07.501 +05:30 [INF] CORS policy execution failed.
+2026-05-29 01:12:07.501 +05:30 [INF] Request origin http://localhost:5091 does not have permission to access the resource.
+2026-05-29 01:12:07.502 +05:30 [INF] Executing endpoint '/chathub/negotiate'
+2026-05-29 01:12:07.506 +05:30 [INF] Executed endpoint '/chathub/negotiate'
+2026-05-29 01:12:07.507 +05:30 [INF] Request finished HTTP/1.1 POST http://localhost:5091/chathub/negotiate?negotiateVersion=1 - 200 316 application/json 17.6217ms
+2026-05-29 01:12:07.519 +05:30 [INF] Request starting HTTP/1.1 GET http://localhost:5091/chathub?id=6h6ghdscp-hzHVAQEqihPw - null null
+2026-05-29 01:12:07.520 +05:30 [INF] CORS policy execution failed.
+2026-05-29 01:12:07.520 +05:30 [INF] Request origin http://localhost:5091 does not have permission to access the resource.
+2026-05-29 01:12:07.521 +05:30 [INF] Executing endpoint '/chathub'

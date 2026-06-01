@@ -1,0 +1,23 @@
+<p>product works!</p>
+
+
+<div class="card" *ngFor="let product of products">
+
+  <img
+    [src]="product.thumbnail"
+    [alt]="product.title"
+    class="card-image">
+
+  <div class="card-content">
+
+    <h3>{{ product.title }}</h3>
+
+    <h4>₹{{ product.price }}</h4>
+
+    <p>{{ product.description }}</p>
+
+    <button>View Details</button>
+
+  </div>
+
+</div>
