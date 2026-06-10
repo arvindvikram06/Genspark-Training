@@ -1,0 +1,22 @@
+@if(authService.user$ | async; as user){
+
+<div class="card shadow">
+
+  <div class="card-body">
+
+    <h2>
+      Welcome, {{ user.firstName }}!
+    </h2>
+    <p class="text-muted">
+      SmartShop Portal Dashboard
+    </p>
+    <hr>
+    <p>
+      click products to browse
+    </p>
+
+  </div>
+
+</div>
+
+}

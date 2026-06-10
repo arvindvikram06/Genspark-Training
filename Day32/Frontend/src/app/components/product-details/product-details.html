@@ -1,0 +1,61 @@
+<div class="container mt-4">
+
+  <a routerLink="/products" class="btn btn-secondary mb-4">
+    Back
+  </a>
+
+  @if (isLoading()) {
+    <div class="text-center mt-5">
+      <div class="spinner-border" role="status"></div>
+    </div>
+  } @else {
+
+    @if (product(); as data) {
+
+      <div class="row">
+
+        <div class="col-md-5 text-center">
+          <img
+            [src]="data.thumbnail"
+            [alt]="data.title"
+            class="img-fluid"
+            style="max-height: 300px;">
+        </div>
+
+        <div class="col-md-7">
+
+          <h2>{{ data.title }}</h2>
+
+          <p class="text-muted">
+            Category: {{ data.category }}
+          </p>
+
+          <p>
+            Rating: ★ {{ data.rating }}
+          </p>
+
+          <h4 class="text-success">
+            ₹ {{ data.price }}
+          </h4>
+
+          <h5>Description</h5>
+          <p>{{ data.description }}</p>
+
+          <button class="btn btn-primary">
+            Add to Cart
+          </button>
+
+        </div>
+
+      </div>
+
+    } @else {
+
+      <div class="alert alert-danger">
+        Product details could not be loaded.
+      </div>
+
+    }
+
+  }
+</div>
