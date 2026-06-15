@@ -1,0 +1,13 @@
+Subject: Telehealth Booking System Project - Clarification Questions
+Dear Dr. Sarah Jenkins,
+
+I hope this email finds you well. We appreciate the opportunity to work on the telehealth booking system for CityHealth Clinic. After reviewing your requirements, we have a few clarification questions to ensure we fully understand your needs.
+
+1. What is the expected volume of patients using the mobile app? This information will help us determine the required scalability of the system.
+2. Are there any specific healthcare privacy laws or regulations that need to be complied with? We want to ensure the system meets the necessary compliance requirements.
+3. What is the preferred video conferencing platform (e.g., Zoom, Google Meet)? This will help us determine the integration requirements for the video link generation feature.
+
+Please let us know your thoughts on these questions, and we will be happy to discuss further. We are excited about the project and look forward to working with you.
+
+Best regards,
+[Your Name]

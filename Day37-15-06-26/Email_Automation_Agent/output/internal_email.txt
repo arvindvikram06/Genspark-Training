@@ -1,0 +1,3 @@
+Subject: New Project - Property Rental Platform
+Dear Team,
+We have a new project to develop a property rental platform with user registration, property browsing, and online rent payment features. The platform will also have admin features to manage properties, users, and generate reports. Please review the requirements and let me know your thoughts and concerns.

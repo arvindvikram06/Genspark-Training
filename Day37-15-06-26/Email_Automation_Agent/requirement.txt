@@ -1,0 +1,15 @@
+Hi team, 
+
+We are looking to build a new telehealth booking system for our clinic, 'CityHealth'. Right now, we manage everything on Google Calendar and it's a mess. 
+
+We need a mobile app for patients where they can create an account, browse our 10 doctors, see their available time slots, and book an appointment. When an appointment is booked, the system should automatically generate a video link (maybe using Zoom or something similar?) and email it to the patient. Patients should also be able to cancel up to 24 hours in advance.
+
+For the doctors and front desk staff, we need a secure web dashboard to view the daily schedule, see patient history notes, and manually block out time for lunch or vacations. 
+
+Since we are dealing with patient medical data, security is huge—it must be fully compliant with healthcare privacy laws. It also needs to be really easy to use for older patients, so no complicated menus or tiny text. We are hoping to get a beta version live in about 3 months before the winter flu season hits. 
+
+We haven't figured out if we want to charge patients directly through the app or just bill them later through our existing accounting software. Let me know what your thoughts are and how we can get started!
+
+Thanks,
+Dr. Sarah Jenkins
+CityHealth Clinic
