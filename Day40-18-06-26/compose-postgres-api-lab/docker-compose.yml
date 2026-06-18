@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: compose-postgres-db
+
+    environment:
+      POSTGRES_DB: librarydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d librarydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    networks:
+      - backend-network
+
+  api:
+    build:
+      context: ./LibraryManagement
+      dockerfile: Dockerfile
+
+    container_name: compose-library-api
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=compose-postgres-db;Port=5432;Database=librarydb;Username=postgres;Password=postgres"
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - backend-network
+
+volumes:
+  postgres-data:
+
+networks:
+  backend-network:
+    driver: bridge

@@ -1,0 +1,55 @@
+Bus Booking API Project - File-by-File Analysis & Improvements
+
+--- CONTROLLERS ---
+
+1. AdminController.cs
+- Improvement: Uses hardcoded role strings `[Authorize(Roles = "Admin")]`. Switch to Policy-based authorization (e.g., `[Authorize(Policy = "RequireAdmin")]`). Also, the repetitive `new ApiResponse<...>` wrapping could be handled by a global Action Filter to keep the controller cleaner.
+
+2. AuthController.cs
+- Improvement: Input validation is missing. Use Data Annotations on the `RegisterRequest` and `LoginRequest` DTOs, and add an Action Filter to automatically return `400 BadRequest` if `ModelState` is invalid.
+
+3. BookingController.cs
+- Improvement: Contains a private `GetUserId()` method to extract the ID from the JWT. While better than inline parsing, it still violates DRY if other controllers need it. Move this to a custom `BaseController` or use a custom Model Binder.
+
+4. OperatorBusController.cs, OperatorController.cs, OperatorScheduleController.cs, PublicBusController.cs
+- Improvement: Massive DRY violation. Every single method contains the exact line: `var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0");`. This logic must be extracted into an extension method on `ClaimsPrincipal` or injected via middleware.
+
+5. PaymentController.cs
+- Improvement: The controller determines HTTP status codes by reading the service's error message string: `if (result.Message.Contains("expired"))... return StatusCode(409)`. This is a severe anti-pattern (Magic Strings) and violates the Open/Closed Principle. The service should return specific Error Enums or custom domain Exceptions instead.
+
+--- SERVICES ---
+
+6. AdminService.cs
+- Improvement: Violates Single Responsibility Principle (SRP). It handles Operator approvals, Bus approvals, Route management, and Convenience Fee configurations. Split this into smaller, focused services like `RouteManagementService` and `OperatorManagementService`.
+
+7. AuthService.cs
+- Improvement: Violates Dependency Inversion Principle (DIP). It tightly couples business logic to `BCrypt.Net.BCrypt` for password hashing and explicitly instantiates `JwtSecurityToken`. Abstract these behind `IPasswordHasher` and `ITokenService` interfaces.
+
+8. BookingService.cs
+- Improvement: `ConfirmBookingAsync` is a "God Method". It verifies holds, calculates fees, creates Bookings, creates Payments, and manually manages DB transactions. Split these responsibilities using the Saga pattern or break them down into smaller domain services (`PricingService`, `PaymentInitializationService`).
+
+9. BusService.cs
+- Improvement: Violates Open/Closed Principle (OCP) in `SearchBusesAsync`. It uses a long chain of `if (parameter != null)` to build queries. Implement the Specification Pattern or a dedicated Query Builder class so new filters can be added without modifying this file.
+
+10. OperatorService.cs
+- Improvement: The `GetProfileAsync` method runs multiple separate database queries to calculate total revenue and active trips. For scalability, offload these complex aggregations to a Database View, a Stored Procedure, or a dedicated `AnalyticsService`.
+
+11. PaymentService.cs
+- Improvement: Relies on returning tuples with string messages (`(bool Success, string Message)`). Refactor to use a robust `Result<T>` pattern (like the `FluentResults` library) to return structured error codes rather than human-readable strings that the controller has to parse.
+
+12. EmailService.cs
+- Improvement: If emails are sent synchronously, it will block the API response thread and slow down the user experience. Push email payloads to a message broker (RabbitMQ/Service Bus) or use a background job scheduler like `Hangfire` to send them asynchronously.
+
+13. ScheduleService.cs
+- Improvement: Ensure all schedule/time comparisons strictly use UTC (`DateTime.UtcNow`) or `DateTimeOffset`. Avoid mixing local and UTC times to prevent severe time-zone-related booking bugs.
+
+14. Background Services (PaymentTimeoutService.cs, ScheduleStatusUpdateService.cs, SeatHoldCleanupService.cs)
+- Improvement: Ensure these `BackgroundService` implementations use resilient polling mechanisms. Use a library like `Polly` to add retry policies in case the database is temporarily locked or unavailable during the cleanup cycle.
+
+--- MODELS & DTOs ---
+
+15. All DTOs (Data Transfer Objects)
+- Improvement: Missing validation attributes. Add `[Required]`, `[EmailAddress]`, `[StringLength]` etc. to enforce data integrity before the request reaches the Controller layer.
+
+16. All Models (Entities)
+- Improvement: Properties have public setters (`public string Name { get; set; }`). This allows entities to be modified anywhere in the code. Implement better encapsulation by using `private set;` and modifying state only through specific methods or constructors (Domain-Driven Design).
